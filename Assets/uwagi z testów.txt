@@ -1,0 +1,4 @@
+czasem wonsz jedzie w bok
+?statystyki wystaja za ekran // sie okaze
+vote starting // server decides
+?blokada nowych graczy po starcie // doneded
