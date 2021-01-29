@@ -27,7 +27,7 @@ public class GameLogic : GameLogicBehavior
     public WonszykServerData data;
     bool play = false;
     int frame = 0;
-    public GUILogMachine logMachine;
+    public LogMachine logMachine;
     [SerializeField] ResultsMachine resultsMachine;
     [SerializeField] StatsMachine statsMachine;
     ItemOnMap currentApple;

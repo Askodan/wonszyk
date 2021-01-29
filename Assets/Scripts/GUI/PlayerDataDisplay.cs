@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 
-public class GUIPlayerData : MonoBehaviour
+public class PlayerDataDisplay : MonoBehaviour
 {
     WonszykPlayerData target;
     [SerializeField] FlexibleColorPicker ColorField;

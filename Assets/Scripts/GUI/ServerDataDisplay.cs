@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GUIServerData : MonoBehaviour
+public class ServerDataDisplay : MonoBehaviour
 {
     private WonszykServerData target;
     [SerializeField] private NumberEditor NumPlayer;

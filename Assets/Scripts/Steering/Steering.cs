@@ -9,7 +9,7 @@ public enum SteeringEnum
     Help
 }
 
-public class Steering : MonoBehaviour
+public abstract class Steering : MonoBehaviour
 {
     static public List<string> Available = new List<string>() { "Normalne", "PC", "Z pomocą"};
     static public Dictionary<SteeringEnum, System.Type> TypeOfEnum = new Dictionary<SteeringEnum, System.Type>() {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GUIPlayerStats : MonoBehaviour
+public class PlayerStatsDisplay : MonoBehaviour
 {
     [SerializeField] Text nameText;
     [SerializeField] Text pointsText;
