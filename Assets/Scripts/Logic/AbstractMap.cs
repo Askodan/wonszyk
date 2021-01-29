@@ -241,7 +241,8 @@ public class AbstractMap
                         if (Walls[k].Equals(hitpoints[j]))
                         {
                             Walls.RemoveAt(k);
-                            k = 0;
+                            k = Walls.Count-1;
+                            break;
                         }
                     }
                 }
