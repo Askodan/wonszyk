@@ -2,27 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbstractMap
+public class LogicMap
 {
     WonszykServerData data;
     // ile musi zostać odcięte węża żeby stać się jabłkiem, a nie ścianą
     int frame = 0;
-    AbstractWonsz[] all_wonsz;
+    LogicWonsz[] all_wonsz;
     // ściana z pozycją (-1, -1) nie istnieje
-    List<Vector2Int> Walls;
-    List<Vector2Int> Apples;
-    Vector2Int currentApple;
+    List<LogicWall> Walls;
+    List<LogicApple> Apples;
+    LogicApple currentApple;
 
-    public AbstractMap(WonszykServerData data_, Dictionary<uint, Player> wonszyki)
+    public LogicMap(WonszykServerData data_, Dictionary<uint, Player> wonszyki)
     {
-        Apples = new List<Vector2Int>();
-        Walls = new List<Vector2Int>();
+        Apples = new List<LogicApple>();
+        Walls = new List<LogicWall>();
         data = data_;
         PlaceWonsz(wonszyki);
-        currentApple = GetRandomFreePlace();
+        currentApple = new LogicApple(GetRandomFreePlace());
     }
 
-    public AbstractWonsz[] All_wonsz
+    void PlaceWonsz(Dictionary<uint, Player> wonszyki)
+    {
+        all_wonsz = new LogicWonsz[wonszyki.Count];
+        int i = 0;
+        foreach(var wonsz in wonszyki)
+        {
+            all_wonsz[i] = wonsz.Value.mywonsz.ToAbstract();
+            all_wonsz[i].PlayerId = wonsz.Key;
+            all_wonsz[i].Results.playerId = wonsz.Key;
+            i++;
+        }
+    }
+
+    public LogicWonsz[] All_wonsz    
     {
         get
         {
@@ -35,7 +48,7 @@ public class AbstractMap
         }
     }
 
-    public List<Vector2Int> Walls1
+    public List<LogicWall> Walls1
     {
         get
         {
@@ -48,7 +61,7 @@ public class AbstractMap
         }
     }
 
-    public List<Vector2Int> Apples1
+    public List<LogicApple> Apples1
     {
         get
         {
@@ -61,7 +74,7 @@ public class AbstractMap
         }
     }
 
-    public Vector2Int CurrentApple
+    public LogicApple CurrentApple
     {
         get
         {
@@ -71,19 +84,6 @@ public class AbstractMap
         set
         {
             currentApple = value;
-        }
-    }
-
-    void PlaceWonsz(Dictionary<uint, Player> wonszyki)
-    {
-        all_wonsz = new AbstractWonsz[wonszyki.Count];
-        int i = 0;
-        foreach(var wonsz in wonszyki)
-        {
-            all_wonsz[i] = wonsz.Value.mywonsz.ToAbstract();
-            all_wonsz[i].PlayerId = wonsz.Key;
-            all_wonsz[i].Results.playerId = wonsz.Key;
-            i++;
         }
     }
 
@@ -98,11 +98,6 @@ public class AbstractMap
             if (!wonsz.Stopped)
             {
                 wonsz.ShootLaser = shooters.Contains(wonsz.PlayerId);
-                if (wonsz.ShootLaser)
-                {
-                    wonsz.ChangeLength = -1;
-                    wonsz.ApplyChangeLength();
-                }
             }
         }
         CheckShooters();
@@ -124,7 +119,7 @@ public class AbstractMap
             wonsz.ApplyChangeLength();
             if(wonsz.Ate == EatenApple.normal)
             {
-                currentApple = GetRandomFreePlace();
+                currentApple.Position = GetRandomFreePlace();
             }
         }
     }
@@ -134,14 +129,14 @@ public class AbstractMap
         // Check all wonszes
         for (int i=0; i<all_wonsz.Length; i++)
         {
-            AbstractWonsz tested = all_wonsz[i];
+            LogicWonsz tested = all_wonsz[i];
             // if not moving not colliding
             if (tested.Stopped)
             {
                 continue;
             }
             // if head
-            Vector2Int head = tested.Positions[0];
+            Vector2Int head = tested.Positions[0].Position;
             // collides with wonszes
             for (int j=0; j<all_wonsz.Length; j++)
             {
@@ -153,7 +148,7 @@ public class AbstractMap
                     {
                         continue;
                     }
-                    Vector2Int current = all_wonsz[j].Positions[k];
+                    Vector2Int current = all_wonsz[j].Positions[k].Position;
                     if(head.Equals(current))
                     {
                         // set it on wonsz
@@ -196,16 +191,20 @@ public class AbstractMap
     void CheckShooters()
     {
         // każdy z węży
-        for (int i = 0; i < all_wonsz.Length; i++)
+        foreach (var wonsz in all_wonsz)
         {
             // jeżeli strzela
-            if (all_wonsz[i].ShootLaser)
+            if (wonsz.ShootLaser)
             {
+                wonsz.ChangeLength = -1;
+                wonsz.ApplyChangeLength();
                 // stwórz punkty trafienia lasera
                 Vector2Int[] hitpoints = new Vector2Int[3];
                 for (int j = 0; j < hitpoints.Length; j++)
                 {
-                    hitpoints[j] = ItemOnMap.KeepOnMap(all_wonsz[i].Positions[0] + all_wonsz[i].Direction.ToVector2Int()*(j+1), data.mapSize);
+                    var hitpoint = ItemOnMap.KeepOnMap(wonsz.Positions[0].Position + wonsz.Direction.ToVector2Int()*(j+1), data.mapSize);
+                    var hit = WhatIsHere(hitpoint);
+                    hit?.LaserHit(this);
                 }
                 // sprawdź trafienia na wszystkich wężach (tak, na sobie też)
                 for (int k = 0; k < all_wonsz.Length; k++)
@@ -214,35 +213,22 @@ public class AbstractMap
                     // jeśli trafił, utnij węża
                     if (hit.Count>0)
                     {
-                        all_wonsz[k].Cut(hit, Mathf.Max(hit[0], data.minLength));
+                        var cut = all_wonsz[k].Cut(hit, Mathf.Max(hit[0], data.minLength));
                         all_wonsz[k].ShotHit = all_wonsz[k].ChangeLength;
 
-                        if (all_wonsz[k].Free_positions.Length > data.lenStillApples)
+                        if (cut.Length > data.lenStillApples)
                         {
-                            for (int j = 0; j < all_wonsz[k].Free_positions.Length; j++)
+                            for (int j = 0; j < cut.Length; j++)
                             {
-                                Walls.Add(all_wonsz[k].Free_positions[j]);
+                                Walls.Add(new LogicWall(cut[j]));
                             }
                         }
                         else
                         {
-                            for (int j = 0; j < all_wonsz[k].Free_positions.Length; j++)
+                            for (int j = 0; j < cut.Length; j++)
                             {
-                                Apples.Add(all_wonsz[k].Free_positions[j]);
+                                Apples.Add(new LogicApple(cut[j]));
                             }
-                        }
-                    }
-                }
-                // sprawdź trafienia w ściany
-                for (int k = Walls.Count-1; k >= 0; k--)
-                {
-                    for(int j = 0; j<hitpoints.Length; j++)
-                    {
-                        if (Walls[k].Equals(hitpoints[j]))
-                        {
-                            Walls.RemoveAt(k);
-                            k = Walls.Count-1;
-                            break;
                         }
                     }
                 }
@@ -250,7 +236,7 @@ public class AbstractMap
         }
     }
 
-    void SetChangeLength(AbstractWonsz wonsz, int change)
+    void SetChangeLength(LogicWonsz wonsz, int change)
     {
         wonsz.ChangeLength = Mathf.Max(wonsz.ChangeLength + change, data.minLength - wonsz.Positions.Length);
     }
@@ -266,33 +252,35 @@ public class AbstractMap
     }
     bool IsPlaceFree(Vector2Int position)
     {
+        return WhatIsHere(position) != null;
+    }
+    LogicItemOnMap WhatIsHere(Vector2Int position){
         foreach(var wonsz in all_wonsz)
         {
             foreach (var pos in wonsz.Positions)
             {
-                if(pos == position)
+                if(pos.Position == position)
                 {
-                    return false;
+                    return pos;
                 }
             }
         }
         foreach (var apple in Apples)
         {
-            if (apple == position)
+            if (apple.Position == position)
             {
-                return false;
+                return apple;
             }
         }
         foreach (var wall in Walls)
         {
-            if (wall == position)
+            if (wall.Position == position)
             {
-                return false;
+                return wall;
             }
         }
-        return true;
+        return null;
     }
-
     public NetResults[] GetAllResults()
     {
         NetResults[] result = new NetResults[all_wonsz.Length];

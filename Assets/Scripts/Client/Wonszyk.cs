@@ -108,9 +108,9 @@ public class Wonszyk : MonoBehaviour
         }
     }
 
-    public AbstractWonsz ToAbstract()
+    public LogicWonsz ToAbstract()
     {
-        AbstractWonsz result = new AbstractWonsz();
+        LogicWonsz result = new LogicWonsz();
         result.Direction = Head.Direction;
         Vector2Int[] pos = new Vector2Int[body.Count];
         for (int i = 0; i < pos.Length; i++) {

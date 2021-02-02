@@ -4,7 +4,7 @@
         "deviceId": "fdf2a8cb",
         "name": "com.DefaultCompany.Wonsz_turbo",
         "processId": 18439,
-        "exited": false
+        "exited": true
     },
     "m_SelectedPriority": 4,
     "m_KnownPackagesForSerialization": [

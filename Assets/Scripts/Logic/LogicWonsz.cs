@@ -7,14 +7,13 @@ public enum EatenApple
     normal,
     players
 }
-public class AbstractWonsz
+public class LogicWonsz
 {
     //input
     uint playerId;
     NetResults results =  new NetResults();
-    Vector2Int[] positions;
-    Vector2Int[] old_positions;
-    Vector2Int[] free_positions;
+    LogicWonszPart[] positions;
+    LogicWonszPart[] old_positions;
     PlayerDirection direction;
     bool shootLaser = false;
     int changeLength = 0;
@@ -36,13 +35,13 @@ public class AbstractWonsz
         collide = false;
         ate = EatenApple.none;
         changeLength = 0;
-        old_positions = new Vector2Int[positions.Length];
+        old_positions = new LogicWonszPart[positions.Length];
         for(int i = 0; i < old_positions.Length; i++)
         {
-            old_positions[i] = new Vector2Int(positions[i].x, positions[i].y);
+            old_positions[i] = new LogicWonszPart(positions[i]);
         }
     }
-    public Vector2Int[] Positions
+    public LogicWonszPart[] Positions
     {
         get
         {
@@ -146,19 +145,6 @@ public class AbstractWonsz
         }
     }
 
-    public Vector2Int[] Free_positions
-    {
-        get
-        {
-            return free_positions;
-        }
-
-        set
-        {
-            free_positions = value;
-        }
-    }
-
     public EatenApple Ate
     {
         get
@@ -190,14 +176,14 @@ public class AbstractWonsz
         for (int i = 0; i < positions.Length; i++)
         {
             int index = positions.Length - i - 1;
-            Vector2Int bodyPart = positions[index];
+            LogicItemOnMap bodyPart = positions[index];
             if (index > 0)
             {
                 positions[index] = positions[index - 1];
             }
         }
         
-        positions[0] = ItemOnMap.KeepOnMap(positions[0] + direction.ToVector2Int(), MapSize);
+        positions[0].Position = ItemOnMap.KeepOnMap(positions[0].Position + direction.ToVector2Int(), MapSize);
     }
     public void BackOff()
     {
@@ -219,11 +205,11 @@ public class AbstractWonsz
         }
         return hits;
     }
-    public void Cut(List<int> indexOfCut, int newLength)
+    public LogicWonszPart[] Cut(List<int> indexOfCut, int newLength)
     {
         ChangeLength = newLength - Positions.Length;
-        List<Vector2Int> stays = new List<Vector2Int>();
-        List<Vector2Int> free = new List<Vector2Int>();
+        List<LogicWonszPart> stays = new List<LogicWonszPart>();
+        List<LogicWonszPart> free = new List<LogicWonszPart>();
         for(int i = 0; i < positions.Length; i++)
         {
             if (i< newLength)
@@ -236,14 +222,14 @@ public class AbstractWonsz
                 }
             }
         }
-        Free_positions = free.ToArray();
         positions = stays.ToArray();
+        return free.ToArray();
     }
     public void ApplyChangeLength()
     {
         if (ChangeLength != 0) {
             //Debug.Log("zmiana długości " + old_positions.Length + " + " + ChangeLength);
-            Vector2Int[] newpos = new Vector2Int[old_positions.Length+ChangeLength];
+            LogicWonszPart[] newpos = new LogicWonszPart[old_positions.Length+ChangeLength];
             // Copy same part
             int tocopy = Mathf.Min(newpos.Length, positions.Length);
             for (int i = 0; i < tocopy; i++)
@@ -272,7 +258,7 @@ public class AbstractWonsz
         string result = "";
         foreach(var pos in positions)
         {
-            result += "(" + pos.x + "," + pos.y + ") ";
+            result += pos.ToString();
         }
         result += ShootLaser ? "shot " : "not shot ";
         result += Ate != EatenApple.none ? "ate " : "not ate ";

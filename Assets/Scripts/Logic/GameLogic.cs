@@ -35,7 +35,7 @@ public class GameLogic : GameLogicBehavior
     [SerializeField] ArrayOnMap walls;
     public Button laser;
     [SerializeField] Button StarterButton;
-    AbstractMap tempMap = null;
+    LogicMap tempMap = null;
     public override void GameStart(RpcArgs args)
     {
         MainThreadManager.Run(() =>
@@ -194,13 +194,16 @@ public class GameLogic : GameLogicBehavior
             // iteracja dzieje się po intach, ale idą do tablicy, a nie słownika
             for (int i=0; i<Player.ActivePlayers.Count; i++)
             {
-                AbstractWonsz a_wonszyk = tempMap.All_wonsz[i];
+                LogicWonsz a_wonszyk = tempMap.All_wonsz[i];
                 Player wonszyk = Player.ActivePlayers[a_wonszyk.PlayerId];
                 int PointsChange = a_wonszyk.ShotHit;
                 if (a_wonszyk.Ate!=EatenApple.none) {
                     if (a_wonszyk.Ate == EatenApple.normal)
                     {
-                        networkObject.SendRpc(RPC_MAKE_NEW_APPLE, Receivers.All, tempMap.CurrentApple.x, tempMap.CurrentApple.y);
+                        networkObject.SendRpc(RPC_MAKE_NEW_APPLE, 
+                                              Receivers.All, 
+                                              tempMap.CurrentApple.Position.x, 
+                                              tempMap.CurrentApple.Position.y);
                     }
                     PointsChange += data.appleEatenPoints;
                     a_wonszyk.Results.meals += 1;
@@ -228,8 +231,8 @@ public class GameLogic : GameLogicBehavior
             }
             networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
                     CreateAllWonszPacket(tempMap.All_wonsz),
-                    ItemOnMap.Points2Bytes(tempMap.Walls1.ToArray()),
-                    ItemOnMap.Points2Bytes(tempMap.Apples1.ToArray()));
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Walls1.ToArray())),
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Apples1.ToArray())));
         }
     }
 
@@ -240,11 +243,11 @@ public class GameLogic : GameLogicBehavior
         // przed odliczaniem
         if (networkObject.IsServer)
         {
-            tempMap = new AbstractMap(data, Player.ActivePlayers);
+            tempMap = new LogicMap(data, Player.ActivePlayers);
             networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
                     CreateAllWonszPacket(tempMap.All_wonsz),
-                    ItemOnMap.Points2Bytes(tempMap.Walls1.ToArray()),
-                    ItemOnMap.Points2Bytes(tempMap.Apples1.ToArray()));
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Walls1.ToArray())),
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Apples1.ToArray())));
         }
         for (int i = 0; i < 4; i++)
         {
@@ -262,7 +265,10 @@ public class GameLogic : GameLogicBehavior
         state = GameStates.Play;
         if (networkObject.IsServer)
         {
-            networkObject.SendRpc(RPC_MAKE_NEW_APPLE, Receivers.AllBuffered, tempMap.CurrentApple.x, tempMap.CurrentApple.y);
+            networkObject.SendRpc(RPC_MAKE_NEW_APPLE, 
+                                  Receivers.AllBuffered, 
+                                  tempMap.CurrentApple.Position.x, 
+                                  tempMap.CurrentApple.Position.y);
             StartCoroutine(GameFlow());
         }
     }
@@ -294,7 +300,7 @@ public class GameLogic : GameLogicBehavior
         }
         return localIP;
     }
-    byte[] CreateAllWonszPacket(AbstractWonsz[] all_wonsz)
+    byte[] CreateAllWonszPacket(LogicWonsz[] all_wonsz)
     {
         if (all_wonsz.Length == 0)
         {
@@ -346,7 +352,7 @@ public class GameLogic : GameLogicBehavior
         Add_wonsz(wonsze, temp);
         return wonsze.ToArray();
     }
-    byte[] CreateWonszDataPacket(AbstractWonsz wonsz)
+    byte[] CreateWonszDataPacket(LogicWonsz wonsz)
     {
         byte[] tail = Wonszyk.ToTailString(wonsz.Positions);
         bool[] flags = { wonsz.ShootLaser, wonsz.Collide, wonsz.Ate != EatenApple.none};
@@ -403,7 +409,7 @@ public class GameLogic : GameLogicBehavior
     }
     void TestPackingWOnsz()
     {
-        AbstractWonsz wonsz = new AbstractWonsz();
+        LogicWonsz wonsz = new LogicWonsz();
         wonsz.Positions = new Vector2Int[] {
             new Vector2Int (7, 1),
             new Vector2Int (7, 2),
