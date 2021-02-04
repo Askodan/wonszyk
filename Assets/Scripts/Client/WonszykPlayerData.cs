@@ -4,16 +4,16 @@ using UnityEngine;
 
 public enum Gender
 {
-    female=0, male=1, other=2
+    female = 0, male = 1, other = 2
 }
 public class WonszykPlayerData : MonoBehaviour
 {
     string[] names = { "Wonszyk", "Wonszysław", "Wonsz", "Wonszul", "Wonszan", "Władywonsz", "Dobrowonsz", "Wonszymir", "Wonszodor" };
     public string WonszName;
-    public Color WonszColor = new Color(0,0,0,1);
+    public Color WonszColor = new Color(0, 0, 0, 1);
     public bool persistent = true;
     public Gender WonszGender = Gender.other;
-    public SteeringEnum WonszSteering= SteeringEnum.PC;
+    public SteeringEnum WonszSteering = SteeringEnum.PC;
     public static WonszykPlayerData Instance = null;
     public bool WonszLocalSteering;
 

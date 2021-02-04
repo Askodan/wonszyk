@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Wonszyk : MonoBehaviour
+public class WonszykMover : MonoBehaviour
 {
     private const int sliceSize = 3;
-    [SerializeField] private GameObject unmoving;
+    [SerializeField] private GameObject blockedMovementEffect;
     private List<WonszykOnMap> body;
     [SerializeField] private WonszykOnMap bodyPart;
     public WonszykOnMap Head { get { return body.Count > 0 ? body[0] : null; } }
@@ -16,7 +16,7 @@ public class Wonszyk : MonoBehaviour
     private void Awake()
     {
         body = new List<WonszykOnMap>();
-        unmoving.SetActive(false);
+        blockedMovementEffect.SetActive(false);
     }
     public int GetLength() { return body.Count; }
     public void UpdateColor()
@@ -171,9 +171,9 @@ public class Wonszyk : MonoBehaviour
     {
         if (Head)
         {
-            unmoving.transform.position = Head.transform.position;
-            if (original.collide || unmoving.activeSelf)
-                unmoving.SetActive(Head.Position == original.positions[0]);
+            blockedMovementEffect.transform.position = Head.transform.position;
+            if (original.collide || blockedMovementEffect.activeSelf)
+                blockedMovementEffect.SetActive(Head.Position == original.positions[0]);
         }
         SetLength(original.positions.Length);
         int i = 0;
@@ -249,7 +249,6 @@ public class Wonszyk : MonoBehaviour
     void TestCoding()
     {
         Dictionary<byte, PlayerDirection[]> Coder = new Dictionary<byte, PlayerDirection[]>();
-        int len = 2;
         int num = 0;
 
         foreach (var dir3 in DirectionsArray)

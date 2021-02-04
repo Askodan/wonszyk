@@ -9,7 +9,7 @@ using BeardedManStudios.Forge.Networking.Unity;
 [RequireComponent(typeof(Steering))]
 public class Player : PlayerBehavior
 {
-    public Wonszyk mywonsz;
+    public WonszykMover mywonsz;
     public WonszykPlayerData data;
     public static Dictionary<uint, Player> ActivePlayers = new Dictionary<uint, Player>();
     public Laser laser;
@@ -26,10 +26,7 @@ public class Player : PlayerBehavior
             }
         }
         mywonsz.data = data;
-        Steering[] steers = GetComponents<Steering>();
-        steer = FindSteeringInArray(steers, data.WonszSteering);
-        steer.is_local = data.WonszLocalSteering;
-        steer.Init();
+        steer = SetupSteering(data.WonszSteering);
     }
 
     protected virtual void OnDestroy()
@@ -70,7 +67,7 @@ public class Player : PlayerBehavior
                 if (steer.is_local)
                 {
                     newDirection = steer.Steer(PlayerDirection.None);
-                    newDirection = steer.localize(newDirection, unallowed);
+                    newDirection = steer.Localize(newDirection, unallowed);
                 }
                 else
                 {
@@ -99,16 +96,13 @@ public class Player : PlayerBehavior
         laser.ShootLaser();
     }
 
-    Steering FindSteeringInArray(Steering[] steers, SteeringEnum whichOne)
+    Steering SetupSteering(SteeringEnum whichOne)
     {
-        foreach (var st in steers)
-        {
-            if (st.GetType() == Steering.TypeOfEnum[whichOne])
-            {
-                return st;
-            }
-        }
-        Debug.LogError("Didn't found steering script of given type");
-        return null;
+        var steer = GetComponent(Steering.Available[whichOne].Type) as Steering;
+        steer.is_local = data.WonszLocalSteering;
+        steer.Init();
+        if (steer == null)
+            Debug.LogError("Didn't found steering script of given type");
+        return steer;
     }
 }

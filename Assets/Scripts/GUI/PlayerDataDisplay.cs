@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-
+using System.Linq;
 public class PlayerDataDisplay : MonoBehaviour
 {
     WonszykPlayerData target;
@@ -12,16 +12,16 @@ public class PlayerDataDisplay : MonoBehaviour
     [SerializeField] Dropdown GenderChooser;
     [SerializeField] Dropdown SteeringChooser;
     [SerializeField] Toggle LocalSteering;
-    
+
     private void Start()
     {
         SteeringChooser.ClearOptions();
-        SteeringChooser.AddOptions(Steering.Available);
+        SteeringChooser.AddOptions(Steering.Available.Values.Select(x => x.Name).ToList());
         target = WonszykPlayerData.Instance;
         target.LoadData();
         NameField.text = target.WonszName;
         ColorField.startingColor = target.WonszColor;
-        
+
         GenderChooser.value = (int)target.WonszGender;
         SteeringChooser.value = (int)target.WonszSteering;
         LocalSteering.isOn = target.WonszLocalSteering;

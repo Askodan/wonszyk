@@ -350,7 +350,7 @@ public class GameLogic : GameLogicBehavior
     }
     byte[] CreateWonszDataPacket(LogicWonsz wonsz)
     {
-        byte[] tail = Wonszyk.ToTailString(wonsz.Parts);
+        byte[] tail = WonszykMover.ToTailString(wonsz.Parts);
         bool[] flags = { wonsz.ShootLaser, wonsz.Collide, wonsz.Ate != EatenApple.none };
         List<byte> result = new List<byte>() { (byte)wonsz.Parts[0].Position.x, (byte)wonsz.Parts[0].Position.y, (byte)wonsz.Results.points, PackFlags(flags) };
         result.AddRange(tail);
@@ -365,7 +365,7 @@ public class GameLogic : GameLogicBehavior
         {
             tail[i] = input[i + num_byte_front];
         }
-        List<PlayerDirection> arrayFromTail = Wonszyk.PosesFromTailString(tail);
+        List<PlayerDirection> arrayFromTail = WonszykMover.PosesFromTailString(tail);
         wonsz.directions = arrayFromTail.ToArray();
         wonsz.positions = new Vector2Int[arrayFromTail.Count + 1];
         wonsz.positions[0] = new Vector2Int(input[0], input[1]);
