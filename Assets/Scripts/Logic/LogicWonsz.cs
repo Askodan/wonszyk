@@ -103,9 +103,7 @@ public class LogicWonsz
     {
         if (ChangeLength != 0)
         {
-            //Debug.Log("zmiana długości " + old_positions.Length + " + " + ChangeLength);
             LogicWonszPart[] newparts = new LogicWonszPart[parts.Length + ChangeLength];
-            // Copy same part
             int copyCount = Mathf.Min(newparts.Length, parts.Length);
             for (int i = 0; i < copyCount; i++)
             {

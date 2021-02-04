@@ -15,7 +15,7 @@ public class LogicWonszPart : LogicItemOnMap
     }
     override public void LaserHit(LogicMap LM)
     {
-        Debug.Log("wonsz trafiony laserem");
+        Debug.Log("wonsz hit with laser");
         var leftParts = master.Cut(this, LM.Data.minLength);
         if (leftParts.Length > LM.Data.lenStillApples)
         {
@@ -34,7 +34,7 @@ public class LogicWonszPart : LogicItemOnMap
     }
     override public void PlayerHit(LogicWonsz player, LogicMap LM)
     {
-        Debug.Log("wonsz trafiony graczem");
+        Debug.Log("wonsz hit with player");
         player.Collide = true;
         LM.SetChangeLength(player, -1);
     }

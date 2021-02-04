@@ -16,11 +16,11 @@ public class LogicWall : LogicItemOnMap
     override public void LaserHit(LogicMap LM)
     {
         LM.Walls.Remove(this);
-        Debug.Log("sciana trafiona laserem");
+        Debug.Log("wall hit with laser");
     }
     override public void PlayerHit(LogicWonsz player, LogicMap LM)
     {
-        Debug.Log("sciana trafiona graczem");
+        Debug.Log("wall hit with player");
         player.Collide = true;
         LM.SetChangeLength(player, -1);
     }

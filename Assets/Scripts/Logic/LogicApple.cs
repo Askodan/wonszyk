@@ -15,7 +15,7 @@ public class LogicApple : LogicItemOnMap
 
     override public void LaserHit(LogicMap LM)
     {
-        Debug.Log("jabko trafione laserem");
+        Debug.Log("apple hit with laser");
     }
     override public void PlayerHit(LogicWonsz player, LogicMap LM)
     {
@@ -29,6 +29,6 @@ public class LogicApple : LogicItemOnMap
             LM.Apples.Remove(this);
         }
         LM.SetChangeLength(player, 1);
-        Debug.Log("jabko trafione graczem");
+        Debug.Log("apple hit with player");
     }
 }
