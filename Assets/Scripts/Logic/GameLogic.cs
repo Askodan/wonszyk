@@ -40,11 +40,11 @@ public class GameLogic : GameLogicBehavior
     {
         MainThreadManager.Run(() =>
         {
-            if(state!=GameStates.Starting )
+            if (state != GameStates.Starting)
                 StartCoroutine(StartSequence());
         });
     }
-    
+
     public override void PlayerPoints(RpcArgs args)
     {
         resultsMachine.Log(args.GetNext<uint>(), args.GetNext<int>());
@@ -59,7 +59,7 @@ public class GameLogic : GameLogicBehavior
             var wonszyk = Player.ActivePlayers[wonsz.playerId];
             wonszyk.mywonsz.FromNetWonsz(wonsz);
             if (wonsz.ate) logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.meal, wonszyk.data.WonszGender, ""));
-            if (wonsz.shot) { logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.shot, wonszyk.data.WonszGender, ""));  wonszyk.ShootLaser(); }
+            if (wonsz.shot) { logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.shot, wonszyk.data.WonszGender, "")); wonszyk.ShootLaser(); }
             if (wonsz.collide) logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.hit, wonszyk.data.WonszGender, ""));
             resultsMachine.Log(wonsz.playerId, wonsz.points);
         }
@@ -98,15 +98,15 @@ public class GameLogic : GameLogicBehavior
         base.NetworkStart();
         if (networkObject.IsServer)
         {
-            networkObject.SendRpc(RPC_SET_MATCH_SETTINGS, Receivers.AllBuffered, 
-                data.mapSize, 
-                data.minLength, 
+            networkObject.SendRpc(RPC_SET_MATCH_SETTINGS, Receivers.AllBuffered,
+                data.mapSize,
+                data.minLength,
                 data.startLength);
             LocalIPAddress();
         }
 
     }
-    
+
     public override void CreatePlayer(RpcArgs args)
     {
         NetworkManager.Instance.InstantiatePlayer();
@@ -156,7 +156,7 @@ public class GameLogic : GameLogicBehavior
                     networkObject.SendRpc(RPC_GAME_START, Receivers.AllBuffered);
                     foreach (var player in Player.ActivePlayers)
                     {
-                        player.Value.mywonsz.SetLength(data.startLength, map.GetRandomFreePlace());
+                        player.Value.mywonsz.SetLength(Mathf.Max(data.startLength, data.minLength), map.GetRandomFreePlace());
                     }
                 }
             }
@@ -169,73 +169,68 @@ public class GameLogic : GameLogicBehavior
         {
             yield return new WaitForSeconds(1f / data.gameSpeed);
             frame++;
-            // stop shooters if they don't have a fuel
             List<uint> shooters = new List<uint>();
-            foreach(var a_wonsz in tempMap.All_wonsz)
+            foreach (var a_wonsz in tempMap.All_wonsz)
             {
-                a_wonsz.Direction = Player.ActivePlayers[a_wonsz.PlayerId].mywonsz.Head.Direction;
-            }
-            foreach (var player in  Player.ActivePlayers)
-            {
-                if (player.Value.networkObject.Shoot)
+                var networkPlayer = Player.ActivePlayers[a_wonsz.PlayerId];
+                a_wonsz.Direction = networkPlayer.mywonsz.Head.Direction;
+                a_wonsz.ShootLaser = networkPlayer.networkObject.Shoot && a_wonsz.Parts.Length > data.minLength;
+                if (networkPlayer.networkObject.Shoot)
                 {
-                    if (player.Value.mywonsz.GetLength() == data.minLength)
-                    {
-                        player.Value.networkObject.Shoot = false;
-                    }
-                    else
-                    {
-                        shooters.Add(player.Key);
-                    }
+                    networkPlayer.networkObject.Shoot = false;
                 }
             }
-            tempMap.Simulate(shooters);
+            tempMap.Simulate();
 
-            // iteracja dzieje się po intach, ale idą do tablicy, a nie słownika
-            for (int i=0; i<Player.ActivePlayers.Count; i++)
-            {
-                LogicWonsz a_wonszyk = tempMap.All_wonsz[i];
-                Player wonszyk = Player.ActivePlayers[a_wonszyk.PlayerId];
-                int PointsChange = a_wonszyk.ShotHit;
-                if (a_wonszyk.Ate!=EatenApple.none) {
-                    if (a_wonszyk.Ate == EatenApple.normal)
-                    {
-                        networkObject.SendRpc(RPC_MAKE_NEW_APPLE, 
-                                              Receivers.All, 
-                                              tempMap.CurrentApple.Position.x, 
-                                              tempMap.CurrentApple.Position.y);
-                    }
-                    PointsChange += data.appleEatenPoints;
-                    a_wonszyk.Results.meals += 1;
-                }
-                if (a_wonszyk.Collide)
-                {
-                    PointsChange += data.collidePoints;
-                    a_wonszyk.Results.hits += 1;
-                }
-                if (wonszyk.networkObject.Shoot)
-                {
-                    PointsChange += data.shotPoints;
-                    a_wonszyk.Results.shots += 1;
-                    wonszyk.networkObject.Shoot = false;
-                }
-                if (PointsChange != 0)
-                {
-                    a_wonszyk.Results.points = Mathf.Max(0, a_wonszyk.Results.points + PointsChange);
-                }
-                if (a_wonszyk.Results.points >= data.pointsToEnd)
-                {
-                    networkObject.SendRpc(RPC_GAME_OVER, Receivers.AllBuffered, NetResults.ArrayToByteArray(tempMap.GetAllResults()));
-                    play = false;
-                }
-            }
+            CalculateStatistics();
+
             networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
                     CreateAllWonszPacket(tempMap.All_wonsz),
-                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Walls1.ToArray())),
-                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Apples1.ToArray())));
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Walls.ToArray())),
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Apples.ToArray())));
         }
     }
-
+    void CalculateStatistics()
+    {
+        // iteracja dzieje się po intach, ale idą do tablicy, a nie słownika
+        for (int i = 0; i < Player.ActivePlayers.Count; i++)
+        {
+            LogicWonsz a_wonszyk = tempMap.All_wonsz[i];
+            Player wonszyk = Player.ActivePlayers[a_wonszyk.PlayerId];
+            int PointsChange = a_wonszyk.LaserCutParts;
+            if (a_wonszyk.Ate != EatenApple.none)
+            {
+                if (a_wonszyk.Ate == EatenApple.normal)
+                {
+                    networkObject.SendRpc(RPC_MAKE_NEW_APPLE,
+                                            Receivers.All,
+                                            tempMap.CurrentApple.Position.x,
+                                            tempMap.CurrentApple.Position.y);
+                }
+                PointsChange += data.appleEatenPoints;
+                a_wonszyk.Results.meals += 1;
+            }
+            if (a_wonszyk.Collide)
+            {
+                PointsChange += data.collidePoints;
+                a_wonszyk.Results.hits += 1;
+            }
+            if (a_wonszyk.ShootLaser)
+            {
+                PointsChange += data.shotPoints;
+                a_wonszyk.Results.shots += 1;
+            }
+            if (PointsChange != 0)
+            {
+                a_wonszyk.Results.points = Mathf.Max(0, a_wonszyk.Results.points + PointsChange);
+            }
+            if (a_wonszyk.Results.points >= data.pointsToEnd)
+            {
+                networkObject.SendRpc(RPC_GAME_OVER, Receivers.AllBuffered, NetResults.ArrayToByteArray(tempMap.GetAllResults()));
+                play = false;
+            }
+        }
+    }
     IEnumerator StartSequence()
     {
         state = GameStates.Starting;
@@ -246,16 +241,17 @@ public class GameLogic : GameLogicBehavior
             tempMap = new LogicMap(data, Player.ActivePlayers);
             networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
                     CreateAllWonszPacket(tempMap.All_wonsz),
-                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Walls1.ToArray())),
-                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Apples1.ToArray())));
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Walls.ToArray())),
+                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(tempMap.Apples.ToArray())));
         }
         for (int i = 0; i < 4; i++)
         {
-            logMachine.Log((3-i).ToString());
+            logMachine.Log((3 - i).ToString());
             yield return new WaitForSeconds(1f);
         }
 
-        foreach(var player in Player.ActivePlayers){
+        foreach (var player in Player.ActivePlayers)
+        {
             resultsMachine.Log(player.Key, 0);
             player.Value.networkObject.AuthorityUpdateMode = true;
         }
@@ -265,9 +261,9 @@ public class GameLogic : GameLogicBehavior
         state = GameStates.Play;
         if (networkObject.IsServer)
         {
-            networkObject.SendRpc(RPC_MAKE_NEW_APPLE, 
-                                  Receivers.AllBuffered, 
-                                  tempMap.CurrentApple.Position.x, 
+            networkObject.SendRpc(RPC_MAKE_NEW_APPLE,
+                                  Receivers.AllBuffered,
+                                  tempMap.CurrentApple.Position.x,
                                   tempMap.CurrentApple.Position.y);
             StartCoroutine(GameFlow());
         }
@@ -322,7 +318,7 @@ public class GameLogic : GameLogicBehavior
         {
             return new NetWonsz[0];
         }
-        void Add_wonsz (List<NetWonsz> all_wonsz, List<byte> tempData)
+        void Add_wonsz(List<NetWonsz> all_wonsz, List<byte> tempData)
         {
             List<byte> id = tempData.GetRange(0, sizeof(uint));
             tempData.RemoveRange(0, sizeof(uint));
@@ -333,7 +329,7 @@ public class GameLogic : GameLogicBehavior
         int d = 0;
         int lastDivider = 0;
         List<byte> temp = new List<byte>();
-        foreach(var piece in input)
+        foreach (var piece in input)
         {
             temp.Add(piece);
             if (d - lastDivider > 2 + sizeof(uint))
@@ -354,9 +350,9 @@ public class GameLogic : GameLogicBehavior
     }
     byte[] CreateWonszDataPacket(LogicWonsz wonsz)
     {
-        byte[] tail = Wonszyk.ToTailString(wonsz.Positions);
-        bool[] flags = { wonsz.ShootLaser, wonsz.Collide, wonsz.Ate != EatenApple.none};
-        List<byte> result = new List<byte>() { (byte)wonsz.Positions[0].x, (byte)wonsz.Positions[0].y, (byte)wonsz.Results.points, PackFlags(flags)};
+        byte[] tail = Wonszyk.ToTailString(wonsz.Parts);
+        bool[] flags = { wonsz.ShootLaser, wonsz.Collide, wonsz.Ate != EatenApple.none };
+        List<byte> result = new List<byte>() { (byte)wonsz.Parts[0].Position.x, (byte)wonsz.Parts[0].Position.y, (byte)wonsz.Results.points, PackFlags(flags) };
         result.AddRange(tail);
         return result.ToArray();
     }
@@ -371,7 +367,7 @@ public class GameLogic : GameLogicBehavior
         }
         List<PlayerDirection> arrayFromTail = Wonszyk.PosesFromTailString(tail);
         wonsz.directions = arrayFromTail.ToArray();
-        wonsz.positions = new Vector2Int[arrayFromTail.Count+1];
+        wonsz.positions = new Vector2Int[arrayFromTail.Count + 1];
         wonsz.positions[0] = new Vector2Int(input[0], input[1]);
 
         wonsz.points = input[2];
@@ -397,7 +393,7 @@ public class GameLogic : GameLogicBehavior
     }
     bool[] UnpackFlags(byte input)
     {
-        BitArray bits = new BitArray(new byte[]{ input });
+        BitArray bits = new BitArray(new byte[] { input });
         bool[] result = new bool[bits.Count];
         int i = 0;
         foreach (var bit in bits)
@@ -410,14 +406,14 @@ public class GameLogic : GameLogicBehavior
     void TestPackingWOnsz()
     {
         LogicWonsz wonsz = new LogicWonsz();
-        wonsz.Positions = new Vector2Int[] {
-            new Vector2Int (7, 1),
-            new Vector2Int (7, 2),
-            new Vector2Int (7, 3),
-            new Vector2Int (6, 3),
-            new Vector2Int (5, 3),
-            new Vector2Int (5, 2),
-            new Vector2Int (5, 1)
+        wonsz.Parts = new LogicWonszPart[] {
+            new LogicWonszPart(wonsz, new Vector2Int (7, 1)),
+            new LogicWonszPart(wonsz, new Vector2Int (7, 2)),
+            new LogicWonszPart(wonsz, new Vector2Int (7, 3)),
+            new LogicWonszPart(wonsz, new Vector2Int (6, 3)),
+            new LogicWonszPart(wonsz, new Vector2Int (5, 3)),
+            new LogicWonszPart(wonsz, new Vector2Int (5, 2)),
+            new LogicWonszPart(wonsz, new Vector2Int (5, 1))
         };
         wonsz.ShootLaser = false;
         wonsz.Ate = EatenApple.normal;

@@ -1,16 +1,15 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LogicMap
 {
     WonszykServerData data;
-    // ile musi zostać odcięte węża żeby stać się jabłkiem, a nie ścianą
     int frame = 0;
     LogicWonsz[] all_wonsz;
-    // ściana z pozycją (-1, -1) nie istnieje
-    List<LogicWall> Walls;
-    List<LogicApple> Apples;
+    List<LogicWall> walls;
+    List<LogicApple> apples;
     LogicApple currentApple;
 
     public LogicMap(WonszykServerData data_, Dictionary<uint, Player> wonszyki)
@@ -26,7 +25,7 @@ public class LogicMap
     {
         all_wonsz = new LogicWonsz[wonszyki.Count];
         int i = 0;
-        foreach(var wonsz in wonszyki)
+        foreach (var wonsz in wonszyki)
         {
             all_wonsz[i] = wonsz.Value.mywonsz.ToAbstract();
             all_wonsz[i].PlayerId = wonsz.Key;
@@ -34,74 +33,23 @@ public class LogicMap
             i++;
         }
     }
+    public WonszykServerData Data { get { return data; } }
+    public LogicWonsz[] All_wonsz { get { return all_wonsz; } set { all_wonsz = value; } }
+    public List<LogicWall> Walls { get { return walls; } set { walls = value; } }
+    public List<LogicApple> Apples { get { return apples; } set { apples = value; } }
+    public LogicApple CurrentApple { get { return currentApple; } set { currentApple = value; } }
 
-    public LogicWonsz[] All_wonsz    
-    {
-        get
-        {
-            return all_wonsz;
-        }
-
-        set
-        {
-            all_wonsz = value;
-        }
-    }
-
-    public List<LogicWall> Walls1
-    {
-        get
-        {
-            return Walls;
-        }
-
-        set
-        {
-            Walls = value;
-        }
-    }
-
-    public List<LogicApple> Apples1
-    {
-        get
-        {
-            return Apples;
-        }
-
-        set
-        {
-            Apples = value;
-        }
-    }
-
-    public LogicApple CurrentApple
-    {
-        get
-        {
-            return currentApple;
-        }
-
-        set
-        {
-            currentApple = value;
-        }
-    }
-
-    public void Simulate(List<uint> shooters)
+    public void Simulate()
     {
         frame++;
-        foreach(var wonsz in all_wonsz)
+        foreach (var wonsz in all_wonsz)
         {
             wonsz.Reset();
             wonsz.Stopped = wonsz.stoppedTill > frame;
-            
-            if (!wonsz.Stopped)
-            {
-                wonsz.ShootLaser = shooters.Contains(wonsz.PlayerId);
-            }
+            wonsz.ShootLaser = wonsz.ShootLaser && !wonsz.Stopped;
         }
         CheckShooters();
-        foreach(var wonsz in all_wonsz)
+        foreach (var wonsz in all_wonsz)
         {
             if (!wonsz.Stopped)
             {
@@ -117,7 +65,7 @@ public class LogicMap
                 wonsz.stoppedTill = frame + data.framesStopped;
             }
             wonsz.ApplyChangeLength();
-            if(wonsz.Ate == EatenApple.normal)
+            if (wonsz.Ate == EatenApple.normal)
             {
                 currentApple.Position = GetRandomFreePlace();
             }
@@ -126,8 +74,7 @@ public class LogicMap
 
     void CheckCollisions()
     {
-        // Check all wonszes
-        for (int i=0; i<all_wonsz.Length; i++)
+        for (int i = 0; i < all_wonsz.Length; i++)
         {
             LogicWonsz tested = all_wonsz[i];
             // if not moving not colliding
@@ -135,65 +82,16 @@ public class LogicMap
             {
                 continue;
             }
-            // if head
-            Vector2Int head = tested.Positions[0].Position;
-            // collides with wonszes
-            for (int j=0; j<all_wonsz.Length; j++)
-            {
-                // every bit of them
-                for (int k = 0; k < all_wonsz[j].Positions.Length; k++)
-                {
-                    // but not itself
-                    if (i == j && k == 0)
-                    {
-                        continue;
-                    }
-                    Vector2Int current = all_wonsz[j].Positions[k].Position;
-                    if(head.Equals(current))
-                    {
-                        // set it on wonsz
-                        tested.Collide = true;
-                        SetChangeLength(tested, -1);
-                    }
-                }
-            }
-            // collides with walls
-            for (int j = 0; j < Walls.Count; j++)
-            {
-                if (head.Equals(Walls[j]))
-                {
-                    // eat it
-                    tested.Collide = true;
-                    SetChangeLength(tested, -1);
-                }
-            }
-            // collides with apples
-            for (int j = 0; j < Apples.Count; j++)
-            {
-                if (head.Equals(Apples[j]) && !tested.Collide)
-                {
-                    // eat it
-                    tested.Ate = EatenApple.players;
-                    Apples.RemoveAt(j);
-                    j = 0;
-                    SetChangeLength(tested, 1);
-                }
-            }
-            if(head.Equals(currentApple) && !tested.Collide)
-            {
-                // eat it
-                tested.Ate = EatenApple.normal;
-                SetChangeLength(tested, 1);
-            }
+            var head = tested.Parts[0];
+            var hit_element = WhatIsHere(head.Position, new LogicWonszPart[] { head });
+            hit_element?.PlayerHit(tested, this);
         }
     }
 
     void CheckShooters()
     {
-        // każdy z węży
         foreach (var wonsz in all_wonsz)
         {
-            // jeżeli strzela
             if (wonsz.ShootLaser)
             {
                 wonsz.ChangeLength = -1;
@@ -202,45 +100,21 @@ public class LogicMap
                 Vector2Int[] hitpoints = new Vector2Int[3];
                 for (int j = 0; j < hitpoints.Length; j++)
                 {
-                    var hitpoint = ItemOnMap.KeepOnMap(wonsz.Positions[0].Position + wonsz.Direction.ToVector2Int()*(j+1), data.mapSize);
+                    var hitpoint = ItemOnMap.KeepOnMap(wonsz.Parts[0].Position + wonsz.Direction.ToVector2Int() * (j + 1), data.mapSize);
                     var hit = WhatIsHere(hitpoint);
                     hit?.LaserHit(this);
-                }
-                // sprawdź trafienia na wszystkich wężach (tak, na sobie też)
-                for (int k = 0; k < all_wonsz.Length; k++)
-                {
-                    List<int> hit = all_wonsz[k].IndexHit(hitpoints);
-                    // jeśli trafił, utnij węża
-                    if (hit.Count>0)
-                    {
-                        var cut = all_wonsz[k].Cut(hit, Mathf.Max(hit[0], data.minLength));
-                        all_wonsz[k].ShotHit = all_wonsz[k].ChangeLength;
-
-                        if (cut.Length > data.lenStillApples)
-                        {
-                            for (int j = 0; j < cut.Length; j++)
-                            {
-                                Walls.Add(new LogicWall(cut[j]));
-                            }
-                        }
-                        else
-                        {
-                            for (int j = 0; j < cut.Length; j++)
-                            {
-                                Apples.Add(new LogicApple(cut[j]));
-                            }
-                        }
-                    }
                 }
             }
         }
     }
-
-    void SetChangeLength(LogicWonsz wonsz, int change)
+    public void SetChangeLength(LogicWonsz wonsz, int change)
     {
-        wonsz.ChangeLength = Mathf.Max(wonsz.ChangeLength + change, data.minLength - wonsz.Positions.Length);
+        wonsz.ChangeLength = Mathf.Max(wonsz.ChangeLength + change, data.minLength - wonsz.Parts.Length);
     }
-
+    public bool IsCurrentApple(LogicApple apple)
+    {
+        return apple == currentApple;
+    }
     Vector2Int GetRandomFreePlace()
     {
         Vector2Int newPos;
@@ -252,39 +126,46 @@ public class LogicMap
     }
     bool IsPlaceFree(Vector2Int position)
     {
-        return WhatIsHere(position) != null;
+        return WhatIsHere(position) == null;
     }
-    LogicItemOnMap WhatIsHere(Vector2Int position){
-        foreach(var wonsz in all_wonsz)
+    LogicItemOnMap WhatIsHere(Vector2Int position, LogicItemOnMap[] ignored = null)
+    {
+        ignored = ignored ?? new LogicItemOnMap[0];
+        bool checkElement(LogicItemOnMap element) => element != null && element.Position == position && !ignored.Contains(element);
+        foreach (var wonsz in all_wonsz)
         {
-            foreach (var pos in wonsz.Positions)
+            foreach (var part in wonsz.Parts)
             {
-                if(pos.Position == position)
+                if (checkElement(part))
                 {
-                    return pos;
+                    return part;
                 }
             }
         }
         foreach (var apple in Apples)
         {
-            if (apple.Position == position)
+            if (checkElement(apple))
             {
                 return apple;
             }
         }
         foreach (var wall in Walls)
         {
-            if (wall.Position == position)
+            if (checkElement(wall))
             {
                 return wall;
             }
+        }
+        if (checkElement(currentApple))
+        {
+            return currentApple;
         }
         return null;
     }
     public NetResults[] GetAllResults()
     {
         NetResults[] result = new NetResults[all_wonsz.Length];
-        for (int i = 0; i<all_wonsz.Length;i++)
+        for (int i = 0; i < all_wonsz.Length; i++)
         {
             result[i] = all_wonsz[i].Results;
         }

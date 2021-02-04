@@ -11,15 +11,9 @@ public class Player : PlayerBehavior
 {
     public Wonszyk mywonsz;
     public WonszykPlayerData data;
-    //private int points = 0;
     public static Dictionary<uint, Player> ActivePlayers = new Dictionary<uint, Player>();
     public Laser laser;
-    //static List<Player> list_players = new List<Player>();
     Steering steer;
-
-    //public int Points { get => points; set { points = value;
-    //        GameLogic.Instance.networkObject.SendRpc(GameLogic.RPC_PLAYER_POINTS, Receivers.AllBuffered, networkObject.NetworkId, points);
-    //    } }
 
     protected virtual void Awake()
     {
@@ -57,7 +51,7 @@ public class Player : PlayerBehavior
         ActivePlayers.Add(networkObject.NetworkId, this);
         laser.SetDuration(1f / GameLogic.Instance.data.gameSpeed);
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -107,8 +101,9 @@ public class Player : PlayerBehavior
 
     Steering FindSteeringInArray(Steering[] steers, SteeringEnum whichOne)
     {
-        foreach (var st in steers) {
-            if(st.GetType() == Steering.TypeOfEnum[whichOne])
+        foreach (var st in steers)
+        {
+            if (st.GetType() == Steering.TypeOfEnum[whichOne])
             {
                 return st;
             }

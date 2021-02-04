@@ -112,27 +112,28 @@ public class Wonszyk : MonoBehaviour
     {
         LogicWonsz result = new LogicWonsz();
         result.Direction = Head.Direction;
-        Vector2Int[] pos = new Vector2Int[body.Count];
-        for (int i = 0; i < pos.Length; i++) {
-            pos[i] = body[i].Position;
+        LogicWonszPart[] pos = new LogicWonszPart[body.Count];
+        for (int i = 0; i < pos.Length; i++)
+        {
+            pos[i] = new LogicWonszPart(result, body[i].Position);
         }
-        result.Positions = pos;
+        result.Parts = pos;
         return result;
     }
 
-    static public byte[] ToTailString(Vector2Int[] Bbody)
+    static public byte[] ToTailString(LogicWonszPart[] Bbody)
     {
-        Vector2Int BHead = Bbody[0];
+        LogicWonszPart BHead = Bbody[0];
         List<byte> result = new List<byte>();
         List<PlayerDirection> temp = new List<PlayerDirection>();
-        Vector2Int prev = BHead;
+        LogicWonszPart prev = BHead;
         foreach (var el in Bbody)
         {
             if (el == BHead)
             {
                 continue;
             }
-            temp.Add(PlayerDirectionMethods.FromVector2Int(ItemOnMap.DirectionVector(prev, el)));
+            temp.Add(PlayerDirectionMethods.FromVector2Int(ItemOnMap.DirectionVector(prev.Position, el.Position)));
             prev = el;
             if (temp.Count == sliceSize)
             {
@@ -182,7 +183,7 @@ public class Wonszyk : MonoBehaviour
             body[i].Position = trim;
             if (i > 0)
             {
-                body[i].Direction = original.directions[i-1].Opposite();
+                body[i].Direction = original.directions[i - 1].Opposite();
             }
             i++;
         }
@@ -190,9 +191,9 @@ public class Wonszyk : MonoBehaviour
     public void FromTailString(byte[] tail)
     {
         List<PlayerDirection> arrayFromTail = PosesFromTailString(tail);
-        SetLength(arrayFromTail.Count+1);
+        SetLength(arrayFromTail.Count + 1);
         int i = 1;
-        foreach(var el in arrayFromTail)
+        foreach (var el in arrayFromTail)
         {
             body[i].Position = ItemOnMap.KeepOnMap(body[i - 1].Position + el.ToVector2Int(), GameLogic.Instance.map.Size);
             body[i].Direction = el;
@@ -224,9 +225,9 @@ public class Wonszyk : MonoBehaviour
         }
         byte result = 0;
         byte mul = 1;
-        for(int i = 0; i < input.Length; i++)
+        for (int i = 0; i < input.Length; i++)
         {
-            result += (byte)(DirectionsArray.IndexOf(input[i])*mul);
+            result += (byte)(DirectionsArray.IndexOf(input[i]) * mul);
             mul *= (byte)DirectionsArray.Count;
         }
         return result;
@@ -242,7 +243,7 @@ public class Wonszyk : MonoBehaviour
         PlayerDirection two = DirectionsArray[Mathf.FloorToInt(mod_second / first)];
         PlayerDirection three = DirectionsArray[Mathf.FloorToInt(i_input / second)];
 
-        return new PlayerDirection[] { one, two, three};
+        return new PlayerDirection[] { one, two, three };
     }
 
     void TestCoding()
@@ -257,23 +258,23 @@ public class Wonszyk : MonoBehaviour
             {
                 foreach (var dir1 in DirectionsArray)
                 {
-                    PlayerDirection[] tab = new PlayerDirection[] { dir1, dir2, dir3};
+                    PlayerDirection[] tab = new PlayerDirection[] { dir1, dir2, dir3 };
                     Coder.Add((byte)num, tab);
                     num++;
                 }
             }
         }
-        foreach(var code in Coder)
+        foreach (var code in Coder)
         {
             //Encode test
             Debug.Log("Encoding");
             if (Encode(code.Value) == code.Key)
             {
-                Debug.Log("ok "+code.Key.ToString());
+                Debug.Log("ok " + code.Key.ToString());
             }
             else
             {
-                string text = code.Key.ToString()+" ";
+                string text = code.Key.ToString() + " ";
                 foreach (var dir in code.Value)
                     text += dir.ToString() + " ";
                 text += Encode(code.Value).ToString();
