@@ -17,6 +17,8 @@ public class WonszykMover : MonoBehaviour
     {
         body = new List<WonszykOnMap>();
         blockedMovementEffect.SetActive(false);
+        var serverData = ((WonszykServerData)WonszykServerData.Instance);
+        blockedMovementEffect.GetComponent<Scale>().TimeAlive = serverData.framesStopped / serverData.gameSpeed;
     }
     public int GetLength() { return body.Count; }
     public void UpdateColor()
