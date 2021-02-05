@@ -27,34 +27,34 @@ public class ServerDataDisplay : MonoBehaviour
         ipAddress.text = target.ip;
         portNumber.text = target.port;
     }
-    public void setNumPlayers(NumberEditor numberEditor)
+    public void setNumPlayers()
     {
-        target.PlayersCountToStart = numberEditor.Value;
+        target.PlayersCountToStart = NumPlayer.Value;
         target.SaveData();
     }
-    public void setMapSize(NumberEditor numberEditor)
+    public void setMapSize()
     {
-        target.mapSize = numberEditor.Value;
+        target.mapSize = MapSize.Value;
         target.SaveData();
     }
-    public void setMinLength(NumberEditor numberEditor)
+    public void setMinLength()
     {
-        target.minLength = numberEditor.Value;
+        target.minLength = MinLength.Value;
         target.SaveData();
     }
-    public void setStartLength(NumberEditor numberEditor)
+    public void setStartLength()
     {
-        target.startLength = numberEditor.Value;
+        target.startLength = StartLength.Value;
         target.SaveData();
     }
-    public void setPointsToEnd(NumberEditor numberEditor)
+    public void setPointsToEnd()
     {
-        target.pointsToEnd = numberEditor.Value;
+        target.pointsToEnd = PointsToEnd.Value;
         target.SaveData();
     }
-    public void setFramesStopped(NumberEditor numberEditor)
+    public void setFramesStopped()
     {
-        target.framesStopped = numberEditor.Value;
+        target.framesStopped = FramesStopped.Value;
         target.SaveData();
     }
     public void setIP()
