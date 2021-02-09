@@ -23,7 +23,20 @@ public class LogicWonsz
     bool stopped = false;
     bool collide = false;
     EatenApple ate = EatenApple.none; // index of eaten apple
+    public LogicWonsz()
+    {
 
+    }
+    public LogicWonsz(uint id, Vector2Int position, int size)
+    {
+        PlayerId = id;
+        Results.playerId = id;
+        Parts = new LogicWonszPart[size];
+        for (int i = 0; i < Parts.Length; i++)
+        {
+            Parts[i] = new LogicWonszPart(this, position);
+        }
+    }
     // state
     public int stoppedTill = 0;
 

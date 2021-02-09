@@ -5,11 +5,11 @@ using UnityEngine;
 public class Scale : MonoBehaviour
 {
     [SerializeField] private Vector2 scaleRange;
-    private float timeAlive;
-    public float TimeAlive
+    private float cycleTime;
+    public float CycleTime
     {
-        get { return timeAlive; }
-        set { timeAlive = value; }
+        get { return cycleTime; }
+        set { cycleTime = value; }
     }
     private float currentTime;
     private Vector3 startScale;
@@ -24,7 +24,7 @@ public class Scale : MonoBehaviour
     }
     private void Update()
     {
-        var scaleProgress = Mathf.Repeat(currentTime / timeAlive, 1f);
+        var scaleProgress = Mathf.Clamp01(currentTime / cycleTime);
         var scaleCoefficient = Mathf.Lerp(scaleRange.x, scaleRange.y, scaleProgress);
         transform.localScale = new Vector3(startScale.x, startScale.y, startScale.z) * scaleCoefficient;
         currentTime += Time.deltaTime;

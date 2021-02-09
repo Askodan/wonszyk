@@ -23,7 +23,7 @@ public class ServerDataDisplay : MonoBehaviour
         MinLength.Value = target.minLength;
         StartLength.Value = target.startLength;
         PointsToEnd.Value = target.pointsToEnd;
-        FramesStopped.Value = target.framesStopped;
+        FramesStopped.Value = target.FramesStopped;
         ipAddress.text = target.ip;
         portNumber.text = target.port;
     }
@@ -54,7 +54,7 @@ public class ServerDataDisplay : MonoBehaviour
     }
     public void setFramesStopped()
     {
-        target.framesStopped = FramesStopped.Value;
+        target.FramesStopped = FramesStopped.Value;
         target.SaveData();
     }
     public void setIP()

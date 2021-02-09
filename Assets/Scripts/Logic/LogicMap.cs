@@ -7,34 +7,32 @@ public class LogicMap
 {
     WonszykServerData data;
     int frame = 0;
-    LogicWonsz[] all_wonsz;
+    List<LogicWonsz> all_wonsz;
     List<LogicWall> walls;
     List<LogicApple> apples;
     LogicApple currentApple;
 
-    public LogicMap(WonszykServerData data_, Dictionary<uint, Player> wonszyki)
+    public LogicMap(WonszykServerData data_, uint[] wonszyks_id)
     {
         Apples = new List<LogicApple>();
         Walls = new List<LogicWall>();
         data = data_;
-        PlaceWonsz(wonszyki);
+        PlaceWonszyks(wonszyks_id);
         currentApple = new LogicApple(GetRandomFreePlace());
     }
 
-    void PlaceWonsz(Dictionary<uint, Player> wonszyki)
+    void PlaceWonszyks(uint[] wonszyks_id)
     {
-        all_wonsz = new LogicWonsz[wonszyki.Count];
-        int i = 0;
-        foreach (var wonsz in wonszyki)
+        all_wonsz = new List<LogicWonsz>();
+        foreach (var wonszyk_id in wonszyks_id)
         {
-            all_wonsz[i] = wonsz.Value.mywonsz.ToAbstract();
-            all_wonsz[i].PlayerId = wonsz.Key;
-            all_wonsz[i].Results.playerId = wonsz.Key;
-            i++;
+            var wonszyk_size = Mathf.Max(data.startLength, data.minLength);
+            var wonszyk_position = GetRandomFreePlace();
+            all_wonsz.Add(new LogicWonsz(wonszyk_id, wonszyk_position, wonszyk_size));
         }
     }
     public WonszykServerData Data { get { return data; } }
-    public LogicWonsz[] All_wonsz { get { return all_wonsz; } set { all_wonsz = value; } }
+    public List<LogicWonsz> All_wonsz { get { return all_wonsz; } set { all_wonsz = value; } }
     public List<LogicWall> Walls { get { return walls; } set { walls = value; } }
     public List<LogicApple> Apples { get { return apples; } set { apples = value; } }
     public LogicApple CurrentApple { get { return currentApple; } set { currentApple = value; } }
@@ -62,7 +60,7 @@ public class LogicMap
             if (wonsz.Collide)
             {
                 wonsz.BackOff();
-                wonsz.stoppedTill = frame + data.framesStopped;
+                wonsz.stoppedTill = frame + data.FramesStopped;
             }
             wonsz.ApplyChangeLength();
             if (wonsz.Ate == EatenApple.normal)
@@ -74,7 +72,7 @@ public class LogicMap
 
     void CheckCollisions()
     {
-        for (int i = 0; i < all_wonsz.Length; i++)
+        for (int i = 0; i < all_wonsz.Count; i++)
         {
             LogicWonsz tested = all_wonsz[i];
             // if not moving not colliding
@@ -164,8 +162,8 @@ public class LogicMap
     }
     public NetResults[] GetAllResults()
     {
-        NetResults[] result = new NetResults[all_wonsz.Length];
-        for (int i = 0; i < all_wonsz.Length; i++)
+        NetResults[] result = new NetResults[all_wonsz.Count];
+        for (int i = 0; i < all_wonsz.Count; i++)
         {
             result[i] = all_wonsz[i].Results;
         }

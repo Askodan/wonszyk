@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.ComponentModel;
 
 
 public class WonszykMover : MonoBehaviour
@@ -8,6 +9,7 @@ public class WonszykMover : MonoBehaviour
     private const int sliceSize = 3;
     [SerializeField] private GameObject blockedMovementEffect;
     private List<WonszykOnMap> body;
+    private WonszykServerData wonszykServerData;
     [SerializeField] private WonszykOnMap bodyPart;
     public WonszykOnMap Head { get { return body.Count > 0 ? body[0] : null; } }
     public WonszykOnMap Neck { get { return body.Count > 1 ? body[1] : null; } }
@@ -17,8 +19,14 @@ public class WonszykMover : MonoBehaviour
     {
         body = new List<WonszykOnMap>();
         blockedMovementEffect.SetActive(false);
-        var serverData = ((WonszykServerData)WonszykServerData.Instance);
-        blockedMovementEffect.GetComponent<Scale>().TimeAlive = serverData.framesStopped / serverData.gameSpeed;
+        wonszykServerData = ((WonszykServerData)WonszykServerData.Instance);
+        wonszykServerData.PropertyChanged += SetBlockMovementTimeAlive;
+        SetBlockMovementTimeAlive(wonszykServerData, null);
+    }
+    private void SetBlockMovementTimeAlive(object sender, PropertyChangedEventArgs e)
+    {
+        var wsd = (WonszykServerData)sender;
+        blockedMovementEffect.GetComponentInChildren<Scale>().CycleTime = wsd.FramesStopped / wsd.gameSpeed;
     }
     public int GetLength() { return body.Count; }
     public void UpdateColor()
@@ -108,19 +116,6 @@ public class WonszykMover : MonoBehaviour
         {
             return PlayerDirection.None;
         }
-    }
-
-    public LogicWonsz ToAbstract()
-    {
-        LogicWonsz result = new LogicWonsz();
-        result.Direction = Head.Direction;
-        LogicWonszPart[] pos = new LogicWonszPart[body.Count];
-        for (int i = 0; i < pos.Length; i++)
-        {
-            pos[i] = new LogicWonszPart(result, body[i].Position);
-        }
-        result.Parts = pos;
-        return result;
     }
 
     static public byte[] ToTailString(LogicWonszPart[] Bbody)

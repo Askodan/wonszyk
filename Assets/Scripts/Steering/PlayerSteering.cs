@@ -11,7 +11,7 @@ public class PlayerSteering : Steering
     }
     public override bool ShootLaser()
     {
-        return Input.GetButtonDown("Jump");
+        return Input.GetButtonDown("Jump") || base.ShootLaser();
     }
     public PlayerDirection SteerWonszKeyboard()
     {

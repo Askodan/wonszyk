@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"byte[]\", \"byte[]\", \"byte[]\"][\"int\", \"int\", \"int\"][][\"int\", \"int\"][\"string\"][\"uint\", \"int\"][\"byte[]\"][]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"Allwonsze\", \"walls\", \"playerapples\"][\"MapSize\", \"MinWonszLength\", \"StartWonszLength\"][][\"posx\", \"posy\"][\"text\"][\"Who\", \"What\"][\"byteswithresults\"][]]")]
+	[GeneratedRPC("{\"types\":[[\"byte[]\", \"byte[]\", \"byte[]\"][\"int\", \"int\", \"int\", \"int\"][][\"int\", \"int\"][\"string\"][\"uint\", \"int\"][\"byte[]\"][]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"Allwonsze\", \"walls\", \"playerapples\"][\"MapSize\", \"MinWonszLength\", \"StartWonszLength\", \"FramesStopped\"][][\"posx\", \"posy\"][\"text\"][\"Who\", \"What\"][\"byteswithresults\"][]]")]
 	public abstract partial class GameLogicBehavior : NetworkBehavior
 	{
 		public const byte RPC_WONSZ_POSITION = 0 + 5;
@@ -30,7 +30,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("WonszPosition", WonszPosition, typeof(byte[]), typeof(byte[]), typeof(byte[]));
-			networkObject.RegisterRpc("SetMatchSettings", SetMatchSettings, typeof(int), typeof(int), typeof(int));
+			networkObject.RegisterRpc("SetMatchSettings", SetMatchSettings, typeof(int), typeof(int), typeof(int), typeof(int));
 			networkObject.RegisterRpc("GameStart", GameStart);
 			networkObject.RegisterRpc("MakeNewApple", MakeNewApple, typeof(int), typeof(int));
 			networkObject.RegisterRpc("Message", Message, typeof(string));
@@ -125,6 +125,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// int MapSize
 		/// int MinWonszLength
 		/// int StartWonszLength
+		/// int FramesStopped
 		/// </summary>
 		public abstract void SetMatchSettings(RpcArgs args);
 		/// <summary>

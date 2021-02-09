@@ -43,7 +43,7 @@ public class PlayerDataDisplay : MonoBehaviour
     }
     public void SetSteering()
     {
-        target.WonszSteering = (SteeringEnum)SteeringChooser.value;
+        target.WonszSteering = Steering.Available.ToArray()[SteeringChooser.value].Key;
         target.SaveData();
     }
     public void SetLocalSteering()

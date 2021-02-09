@@ -25,13 +25,12 @@ public class SteeringInfo
 }
 public abstract class Steering : MonoBehaviour
 {
-    //static public List<string> Available = new List<string>() { "Normalne", "PC", "Z pomocą" };
     static public Dictionary<SteeringEnum, SteeringInfo> Available = new Dictionary<SteeringEnum, SteeringInfo>() {
-        { SteeringEnum.Mobile, new SteeringInfo("Normalne", "MobileSteering") },
         { SteeringEnum.PC, new SteeringInfo("PC", "PlayerSteering") },
+        { SteeringEnum.Mobile, new SteeringInfo("Normalne", "MobileSteering") },
         { SteeringEnum.Help, new SteeringInfo("Z pomocą", "HelpSteering") },
-        { SteeringEnum.Tilt, new SteeringInfo("Przechyłowe", "TiltSteering") },
-        { SteeringEnum.Smudge, new SteeringInfo("Smyraśne", "SmudgeSteering") }};
+        { SteeringEnum.Smudge, new SteeringInfo("Smyraśne", "SmudgeSteering") },
+        { SteeringEnum.Tilt, new SteeringInfo("Przechyłowe", "TiltSteering") },};
     public bool is_local = true;
     virtual public PlayerDirection Steer(PlayerDirection unallowed)
     {
@@ -39,11 +38,19 @@ public abstract class Steering : MonoBehaviour
     }
     virtual public bool ShootLaser()
     {
-        return false;
+        bool temp = laser;
+        laser = false;
+        return temp;
     }
     virtual public void Init()
     {
+        GameLogic.Instance.laser.onClick.AddListener(laserClick);
+    }
 
+    private bool laser = false;
+    private void laserClick()
+    {
+        laser = true;
     }
     public PlayerDirection Localize(PlayerDirection steer, PlayerDirection oppositeCurrent)
     {
