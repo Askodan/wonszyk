@@ -17,7 +17,9 @@ public class SteeringInfo
         this.name = name;
         this.type = type;
     }
+    //** Name - showed in gui while choosing steering
     public string Name { get { return name; } }
+    //** Type - a string name of component to use
     public string Type { get { return type; } }
 
     private string name;

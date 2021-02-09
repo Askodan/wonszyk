@@ -26,7 +26,8 @@ public class WonszykMover : MonoBehaviour
     private void SetBlockMovementTimeAlive(object sender, PropertyChangedEventArgs e)
     {
         var wsd = (WonszykServerData)sender;
-        blockedMovementEffect.GetComponentInChildren<Scale>().CycleTime = wsd.FramesStopped / wsd.gameSpeed;
+        if (blockedMovementEffect)
+            blockedMovementEffect.GetComponentInChildren<Scale>().CycleTime = wsd.FramesStopped / wsd.gameSpeed;
     }
     public int GetLength() { return body.Count; }
     public void UpdateColor()
