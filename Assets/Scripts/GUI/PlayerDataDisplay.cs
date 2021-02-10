@@ -18,13 +18,23 @@ public class PlayerDataDisplay : MonoBehaviour
         SteeringChooser.ClearOptions();
         SteeringChooser.AddOptions(Steering.Available.Values.Select(x => x.Name).ToList());
         target = WonszykPlayerData.Instance;
+        PrepareMenus();
+    }
+    private void PrepareMenus()
+    {
         target.LoadData();
         NameField.text = target.WonszName;
         ColorField.startingColor = target.WonszColor;
+        ColorField.color = target.WonszColor;
 
         GenderChooser.value = (int)target.WonszGender;
         SteeringChooser.value = (int)target.WonszSteering;
         LocalSteering.isOn = target.WonszLocalSteering;
+    }
+    private void OnEnable()
+    {
+        if (target)
+            PrepareMenus();
     }
     public void SetName()
     {

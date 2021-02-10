@@ -6,6 +6,11 @@ public class SmudgeSteering : Steering
 {
     private float minMovement = 0f;
     public float MinMovement { get { return minMovement; } set { minMovement = value; } }
+    public override void Init()
+    {
+        base.Init();
+        minMovement = WonszykPlayerData.Instance.smudgeSteeringMinMovement;
+    }
     public override PlayerDirection Steer(PlayerDirection unallowed)
     {
         PlayerDirection newOne = SteerSmudge();

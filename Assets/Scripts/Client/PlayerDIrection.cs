@@ -80,4 +80,22 @@ static class PlayerDirectionMethods
         }
         return newPos;
     }
+    public static string ToGUIString(this PlayerDirection direction)
+    {
+
+        switch (direction)
+        {
+            case PlayerDirection.Up:
+                return "W górę";
+            case PlayerDirection.Down:
+                return "W dół";
+            case PlayerDirection.Right:
+                return "W prawo";
+            case PlayerDirection.Left:
+                return "W lewo";
+            case PlayerDirection.None:
+                return "Żaden";
+        }
+        return "";
+    }
 }

@@ -9,13 +9,17 @@ public enum Gender
 public class WonszykPlayerData : MonoBehaviour
 {
     string[] names = { "Wonszyk", "Wonszysław", "Wonsz", "Wonszul", "Wonszan", "Władywonsz", "Dobrowonsz", "Wonszymir", "Wonszodor" };
+    public bool persistent = true;
     public string WonszName;
     public Color WonszColor = new Color(0, 0, 0, 1);
-    public bool persistent = true;
     public Gender WonszGender = Gender.other;
     public SteeringEnum WonszSteering = SteeringEnum.PC;
+    public int smudgeSteeringMinMovement = 5;
+    public float tiltSteeringMinMovement = 0.2f;
+
     public static WonszykPlayerData Instance = null;
     public bool WonszLocalSteering;
+    bool loaded = false;
 
     private void Awake()
     {
@@ -35,11 +39,12 @@ public class WonszykPlayerData : MonoBehaviour
 
     public void LoadData()
     {
+        loaded = true;
         if (PlayerPrefs.HasKey("WonszColorR"))
         {
             WonszColor = new Color(PlayerPrefs.GetFloat("WonszColorR"), PlayerPrefs.GetFloat("WonszColorG"), PlayerPrefs.GetFloat("WonszColorB"), 1f);
         }
-        if (PlayerPrefs.HasKey("WonszName"))
+        if (PlayerPrefs.HasKey("WonszName") && PlayerPrefs.GetString("WonszName").Length > 0)
         {
             WonszName = PlayerPrefs.GetString("WonszName");
         }
@@ -59,10 +64,23 @@ public class WonszykPlayerData : MonoBehaviour
         {
             WonszLocalSteering = PlayerPrefs.GetInt("WonszLocalSteering") == 1;
         }
+        if (PlayerPrefs.HasKey("SmudgeSteeringMinMovement"))
+        {
+            smudgeSteeringMinMovement = PlayerPrefs.GetInt("SmudgeSteeringMinMovement");
+        }
+        if (PlayerPrefs.HasKey("TiltSteeringMinMovement"))
+        {
+            tiltSteeringMinMovement = PlayerPrefs.GetFloat("TiltSteeringMinMovement");
+        }
     }
 
     public void SaveData()
     {
+        // don't save anything if nothing was loaded
+        if (!loaded)
+        {
+            return;
+        }
         PlayerPrefs.SetFloat("WonszColorR", WonszColor.r);
         PlayerPrefs.SetFloat("WonszColorG", WonszColor.g);
         PlayerPrefs.SetFloat("WonszColorB", WonszColor.b);
@@ -70,6 +88,8 @@ public class WonszykPlayerData : MonoBehaviour
         PlayerPrefs.SetInt("WonszGender", (int)WonszGender);
         PlayerPrefs.SetInt("WonszSteering", (int)WonszSteering);
         PlayerPrefs.SetInt("WonszLocalSteering", WonszLocalSteering ? 1 : 0);
+        PlayerPrefs.SetInt("SmudgeSteeringMinMovement", smudgeSteeringMinMovement);
+        PlayerPrefs.SetFloat("TiltSteeringMinMovement", tiltSteeringMinMovement);
         PlayerPrefs.Save();
     }
 
@@ -80,5 +100,7 @@ public class WonszykPlayerData : MonoBehaviour
         another.WonszGender = WonszGender;
         another.WonszSteering = WonszSteering;
         another.WonszLocalSteering = WonszLocalSteering;
+        another.smudgeSteeringMinMovement = smudgeSteeringMinMovement;
+        another.tiltSteeringMinMovement = tiltSteeringMinMovement;
     }
 }

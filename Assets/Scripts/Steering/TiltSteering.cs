@@ -6,10 +6,15 @@ public class TiltSteering : Steering
 {
     Vector3 basePosition;
     float minMovement = 0.2f;
+    public float MinMovement { get { return minMovement; } set { minMovement = value; } }
     PlayerDirection lastMove = PlayerDirection.None;
     public override void Init()
     {
         base.Init();
+        Calibrate();
+    }
+    public void Calibrate()
+    {
         basePosition = Input.acceleration;
     }
     public override PlayerDirection Steer(PlayerDirection unallowed)
