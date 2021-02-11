@@ -67,13 +67,13 @@ public class WonszykMover : MonoBehaviour
         foreach (var part in body)
         {
             if (num != len && num != 0)
-                part.PositionInWonszyk = WonszykPosition.Body;
+                part.PositionInWonszyk = EnumWonszykPartType.Body;
             else
             if (num == 0)
-                part.PositionInWonszyk = WonszykPosition.Head;
+                part.PositionInWonszyk = EnumWonszykPartType.Head;
             else
             if (num == len)
-                part.PositionInWonszyk = WonszykPosition.Tail;
+                part.PositionInWonszyk = EnumWonszykPartType.Tail;
 
             num++;
         }
