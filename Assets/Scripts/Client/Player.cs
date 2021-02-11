@@ -6,7 +6,6 @@ using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Unity;
 
-[RequireComponent(typeof(Steering))]
 public class Player : PlayerBehavior
 {
     public WonszykMover mywonsz;
@@ -26,7 +25,6 @@ public class Player : PlayerBehavior
             }
         }
         mywonsz.data = data;
-        steer = SetupSteering(data.WonszSteering);
     }
 
     protected virtual void OnDestroy()
@@ -44,6 +42,7 @@ public class Player : PlayerBehavior
         {
             // Assign the name when this object is setup on the network
             networkObject.SendRpc(RPC_SET_CUSTOMIZATIONS, Receivers.AllBuffered, data.WonszName, data.WonszColor, (int)(data.WonszGender));
+            steer = SetupSteering(data.WonszSteering);
         }
         ActivePlayers.Add(networkObject.NetworkId, this);
         laser.SetDuration(1f / GameLogic.Instance.data.gameSpeed);
@@ -98,7 +97,7 @@ public class Player : PlayerBehavior
 
     Steering SetupSteering(SteeringEnum whichOne)
     {
-        var steer = GetComponent(Steering.Available[whichOne].Type) as Steering;
+        var steer = gameObject.AddComponent(Steering.Available[whichOne].Type) as Steering;
         steer.is_local = data.WonszLocalSteering;
         steer.Init();
         if (steer == null)

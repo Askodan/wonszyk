@@ -12,27 +12,27 @@ public enum SteeringEnum
 }
 public class SteeringInfo
 {
-    public SteeringInfo(string name, string type)
+    public SteeringInfo(string name, System.Type type)
     {
         this.name = name;
         this.type = type;
     }
     //** Name - showed in gui while choosing steering
     public string Name { get { return name; } }
-    //** Type - a string name of component to use
-    public string Type { get { return type; } }
+    //** Type - a System.Type of component to use
+    public System.Type Type { get { return type; } }
 
     private string name;
-    private string type;
+    private System.Type type;
 }
 public abstract class Steering : MonoBehaviour
 {
     static public Dictionary<SteeringEnum, SteeringInfo> Available = new Dictionary<SteeringEnum, SteeringInfo>() {
-        { SteeringEnum.PC, new SteeringInfo("PC", "PlayerSteering") },
-        { SteeringEnum.Mobile, new SteeringInfo("Normalne", "MobileSteering") },
-        { SteeringEnum.Help, new SteeringInfo("Z pomocą", "HelpSteering") },
-        { SteeringEnum.Smudge, new SteeringInfo("Smyraśne", "SmudgeSteering") },
-        { SteeringEnum.Tilt, new SteeringInfo("Przechyłowe", "TiltSteering") },};
+        { SteeringEnum.Mobile, new SteeringInfo("Normalne", typeof(MobileSteering)) },
+        { SteeringEnum.Help, new SteeringInfo("Z pomocą", typeof(HelpSteering)) },
+        { SteeringEnum.Smudge, new SteeringInfo("Smyraśne", typeof(SmudgeSteering)) },
+        { SteeringEnum.Tilt, new SteeringInfo("Przechyłowe", typeof(TiltSteering)) },
+        { SteeringEnum.PC, new SteeringInfo("PC", typeof(PlayerSteering)) },};
     public bool is_local = true;
     virtual public PlayerDirection Steer(PlayerDirection unallowed)
     {
