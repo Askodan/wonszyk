@@ -21,4 +21,12 @@ public class ScreenChooser : MonoBehaviour
             i++;
         }
     }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape) && current > 0)
+        {
+            ChangeScreen(-1);
+        }
+    }
 }

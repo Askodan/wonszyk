@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
-public class WonszykServerData : KeepAliveBetweenScenes
+public class WonszykServerData : KeepAliveBetweenScenes, INotifyPropertyChanged
 {
     // points
     public int appleEatenPoints = 1;
@@ -17,7 +18,7 @@ public class WonszykServerData : KeepAliveBetweenScenes
     public int mapSize = 10;
     public int minLength = 1;
     public int startLength = 3;
-    public int framesStopped = 3;
+    private int framesStopped = 3;
     public int lenStillApples = 1;
 
     // other
@@ -25,6 +26,19 @@ public class WonszykServerData : KeepAliveBetweenScenes
     public ItemOnMap playerApplePrefav;
     public string ip = "127.0.0.1";
     public string port = "15937";
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        PropertyChangedEventHandler handler = PropertyChanged;
+        if (handler != null)
+            handler(this, e);
+    }
+    protected void OnPropertyChanged(string propertyName)
+    {
+        OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+    }
+    public int FramesStopped { get { return framesStopped; } set { framesStopped = value; OnPropertyChanged("FramesStopped"); } }
 
     public void LoadData()
     {
@@ -50,7 +64,7 @@ public class WonszykServerData : KeepAliveBetweenScenes
         }
         if (PlayerPrefs.HasKey("ServerFramesStopped"))
         {
-            framesStopped = PlayerPrefs.GetInt("ServerFramesStopped");
+            FramesStopped = PlayerPrefs.GetInt("ServerFramesStopped");
         }
         if (PlayerPrefs.HasKey("ServerIP"))
         {
@@ -73,7 +87,7 @@ public class WonszykServerData : KeepAliveBetweenScenes
         PlayerPrefs.SetInt("ServerMapSize", mapSize);
         PlayerPrefs.SetInt("ServerMinLength", minLength);
         PlayerPrefs.SetInt("ServerStartLength", startLength);
-        PlayerPrefs.SetInt("ServerFramesStopped", framesStopped);
+        PlayerPrefs.SetInt("ServerFramesStopped", FramesStopped);
         PlayerPrefs.SetString("ServerIP", ip);
         PlayerPrefs.SetString("ServerPORT", port);
         PlayerPrefs.SetInt("ServerLenStillApples", lenStillApples);

@@ -6,20 +6,13 @@ using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Unity;
 
-[RequireComponent(typeof(Steering))]
 public class Player : PlayerBehavior
 {
-    public Wonszyk mywonsz;
+    public WonszykMover mywonsz;
     public WonszykPlayerData data;
-    //private int points = 0;
     public static Dictionary<uint, Player> ActivePlayers = new Dictionary<uint, Player>();
     public Laser laser;
-    //static List<Player> list_players = new List<Player>();
     Steering steer;
-
-    //public int Points { get => points; set { points = value;
-    //        GameLogic.Instance.networkObject.SendRpc(GameLogic.RPC_PLAYER_POINTS, Receivers.AllBuffered, networkObject.NetworkId, points);
-    //    } }
 
     protected virtual void Awake()
     {
@@ -32,10 +25,6 @@ public class Player : PlayerBehavior
             }
         }
         mywonsz.data = data;
-        Steering[] steers = GetComponents<Steering>();
-        steer = FindSteeringInArray(steers, data.WonszSteering);
-        steer.is_local = data.WonszLocalSteering;
-        steer.Init();
     }
 
     protected virtual void OnDestroy()
@@ -52,12 +41,18 @@ public class Player : PlayerBehavior
         else
         {
             // Assign the name when this object is setup on the network
-            networkObject.SendRpc(RPC_SET_CUSTOMIZATIONS, Receivers.AllBuffered, data.WonszName, data.WonszColor, (int)(data.WonszGender));
+            networkObject.SendRpc(RPC_SET_CUSTOMIZATIONS, Receivers.AllBuffered,
+                                    data.WonszName,
+                                    data.WonszMainColor,
+                                    data.WonszPatternColor,
+                                    data.WonszPattern,
+                                    (int)(data.WonszGender));
+            steer = SetupSteering(data.WonszSteering);
         }
         ActivePlayers.Add(networkObject.NetworkId, this);
         laser.SetDuration(1f / GameLogic.Instance.data.gameSpeed);
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -76,7 +71,7 @@ public class Player : PlayerBehavior
                 if (steer.is_local)
                 {
                     newDirection = steer.Steer(PlayerDirection.None);
-                    newDirection = steer.localize(newDirection, unallowed);
+                    newDirection = steer.Localize(newDirection, unallowed);
                 }
                 else
                 {
@@ -92,7 +87,9 @@ public class Player : PlayerBehavior
     public override void SetCustomizations(RpcArgs args)
     {
         data.WonszName = args.GetNext<string>();
-        data.WonszColor = args.GetNext<Color>();
+        data.WonszMainColor = args.GetNext<Color>();
+        data.WonszPatternColor = args.GetNext<Color>();
+        data.WonszPattern = args.GetNext<int>();
         data.WonszGender = (Gender)args.GetNext<int>();
         mywonsz.UpdateColor();
         name = data.WonszName;
@@ -105,15 +102,13 @@ public class Player : PlayerBehavior
         laser.ShootLaser();
     }
 
-    Steering FindSteeringInArray(Steering[] steers, SteeringEnum whichOne)
+    Steering SetupSteering(SteeringEnum whichOne)
     {
-        foreach (var st in steers) {
-            if(st.GetType() == Steering.TypeOfEnum[whichOne])
-            {
-                return st;
-            }
-        }
-        Debug.LogError("Didn't found steering script of given type");
-        return null;
+        var steer = gameObject.AddComponent(Steering.Available[whichOne].Type) as Steering;
+        steer.is_local = data.WonszLocalSteering;
+        steer.Init();
+        if (steer == null)
+            Debug.LogError("Didn't found steering script of given type");
+        return steer;
     }
 }

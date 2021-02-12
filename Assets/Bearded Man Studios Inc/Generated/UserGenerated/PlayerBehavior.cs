@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\", \"Color\", \"int\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"Name\", \"Color\", \"Gender\"]]")]
+	[GeneratedRPC("{\"types\":[[\"string\", \"Color\", \"Color\", \"int\", \"int\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"Name\", \"MainColor\", \"PatternColor\", \"Pattern\", \"Gender\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_SET_CUSTOMIZATIONS = 0 + 5;
@@ -22,7 +22,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("SetCustomizations", SetCustomizations, typeof(string), typeof(Color), typeof(int));
+			networkObject.RegisterRpc("SetCustomizations", SetCustomizations, typeof(string), typeof(Color), typeof(Color), typeof(int), typeof(int));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -102,7 +102,9 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// <summary>
 		/// Arguments:
 		/// string Name
-		/// Color Color
+		/// Color MainColor
+		/// Color PatternColor
+		/// int Pattern
 		/// int Gender
 		/// </summary>
 		public abstract void SetCustomizations(RpcArgs args);
