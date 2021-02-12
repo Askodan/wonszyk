@@ -41,7 +41,12 @@ public class Player : PlayerBehavior
         else
         {
             // Assign the name when this object is setup on the network
-            networkObject.SendRpc(RPC_SET_CUSTOMIZATIONS, Receivers.AllBuffered, data.WonszName, data.WonszColor, (int)(data.WonszGender));
+            networkObject.SendRpc(RPC_SET_CUSTOMIZATIONS, Receivers.AllBuffered,
+                                    data.WonszName,
+                                    data.WonszMainColor,
+                                    data.WonszPatternColor,
+                                    data.WonszPattern,
+                                    (int)(data.WonszGender));
             steer = SetupSteering(data.WonszSteering);
         }
         ActivePlayers.Add(networkObject.NetworkId, this);
@@ -82,7 +87,9 @@ public class Player : PlayerBehavior
     public override void SetCustomizations(RpcArgs args)
     {
         data.WonszName = args.GetNext<string>();
-        data.WonszColor = args.GetNext<Color>();
+        data.WonszMainColor = args.GetNext<Color>();
+        data.WonszPatternColor = args.GetNext<Color>();
+        data.WonszPattern = args.GetNext<int>();
         data.WonszGender = (Gender)args.GetNext<int>();
         mywonsz.UpdateColor();
         name = data.WonszName;

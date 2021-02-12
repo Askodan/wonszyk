@@ -11,7 +11,9 @@ public class WonszykPlayerData : MonoBehaviour
     string[] names = { "Wonszyk", "Wonszysław", "Wonsz", "Wonszul", "Wonszan", "Władywonsz", "Dobrowonsz", "Wonszymir", "Wonszodor" };
     public bool persistent = true;
     public string WonszName;
-    public Color WonszColor = new Color(0, 0, 0, 1);
+    public Color WonszMainColor = new Color(0, 0, 0, 1);
+    public Color WonszPatternColor = new Color(0, 0, 0, 1);
+    public int WonszPattern = 1;
     public Gender WonszGender = Gender.other;
     public SteeringEnum WonszSteering = SteeringEnum.PC;
     public int smudgeSteeringMinMovement = 5;
@@ -40,10 +42,20 @@ public class WonszykPlayerData : MonoBehaviour
     public void LoadData()
     {
         loaded = true;
-        if (PlayerPrefs.HasKey("WonszColorR"))
+        // Wonszyk visuals
+        if (PlayerPrefs.HasKey("WonszMainColorR"))
         {
-            WonszColor = new Color(PlayerPrefs.GetFloat("WonszColorR"), PlayerPrefs.GetFloat("WonszColorG"), PlayerPrefs.GetFloat("WonszColorB"), 1f);
+            WonszMainColor = new Color(PlayerPrefs.GetFloat("WonszMainColorR"), PlayerPrefs.GetFloat("WonszMainColorG"), PlayerPrefs.GetFloat("WonszMainColorB"), 1f);
         }
+        if (PlayerPrefs.HasKey("WonszPatternColorR"))
+        {
+            WonszPatternColor = new Color(PlayerPrefs.GetFloat("WonszPatternColorR"), PlayerPrefs.GetFloat("WonszPatternColorG"), PlayerPrefs.GetFloat("WonszPatternColorB"), 1f);
+        }
+        if (PlayerPrefs.HasKey("WonszPattern"))
+        {
+            WonszPattern = PlayerPrefs.GetInt("WonszPattern");
+        }
+        // Player settings
         if (PlayerPrefs.HasKey("WonszName") && PlayerPrefs.GetString("WonszName").Length > 0)
         {
             WonszName = PlayerPrefs.GetString("WonszName");
@@ -81,9 +93,13 @@ public class WonszykPlayerData : MonoBehaviour
         {
             return;
         }
-        PlayerPrefs.SetFloat("WonszColorR", WonszColor.r);
-        PlayerPrefs.SetFloat("WonszColorG", WonszColor.g);
-        PlayerPrefs.SetFloat("WonszColorB", WonszColor.b);
+        PlayerPrefs.SetFloat("WonszMainColorR", WonszMainColor.r);
+        PlayerPrefs.SetFloat("WonszMainColorG", WonszMainColor.g);
+        PlayerPrefs.SetFloat("WonszMainColorB", WonszMainColor.b);
+        PlayerPrefs.SetFloat("WonszPatternColorR", WonszPatternColor.r);
+        PlayerPrefs.SetFloat("WonszPatternColorG", WonszPatternColor.g);
+        PlayerPrefs.SetFloat("WonszPatternColorB", WonszPatternColor.b);
+        PlayerPrefs.SetInt("WonszPattern", WonszPattern);
         PlayerPrefs.SetString("WonszName", WonszName);
         PlayerPrefs.SetInt("WonszGender", (int)WonszGender);
         PlayerPrefs.SetInt("WonszSteering", (int)WonszSteering);
@@ -95,8 +111,11 @@ public class WonszykPlayerData : MonoBehaviour
 
     public void CopyTo(WonszykPlayerData another)
     {
+        another.WonszMainColor = WonszMainColor;
+        another.WonszPatternColor = WonszPatternColor;
+        another.WonszPattern = WonszPattern;
+
         another.WonszName = WonszName;
-        another.WonszColor = WonszColor;
         another.WonszGender = WonszGender;
         another.WonszSteering = WonszSteering;
         another.WonszLocalSteering = WonszLocalSteering;

@@ -20,6 +20,7 @@ public class WonszykOnMap : ItemOnMap
 {
     EnumWonszykPartType positionInWonszyk;
     [SerializeField] WonszykPartType[] partTypes;
+    [SerializeField] Texture2D[] patterns;
     public EnumWonszykPartType PositionInWonszyk
     {
         get
@@ -37,11 +38,13 @@ public class WonszykOnMap : ItemOnMap
         }
     }
 
-    public void SetColor(Color color)
+    public void SetColor(Color mainColor, Color patternColor, int pattern)
     {
         foreach (var rec in partTypes)
         {
-            rec.renderer.material.SetColor("_Color", color);
+            rec.renderer.material.SetColor("_ColorBase", mainColor);
+            rec.renderer.material.SetColor("_ColorPattern", patternColor);
+            rec.renderer.material.SetTexture("_PatternTex", patterns[pattern - 1]);
         }
     }
 }

@@ -7,7 +7,6 @@ using System.Linq;
 public class PlayerDataDisplay : MonoBehaviour
 {
     WonszykPlayerData target;
-    [SerializeField] FlexibleColorPicker ColorField;
     [SerializeField] InputField NameField;
     [SerializeField] Dropdown GenderChooser;
     [SerializeField] Dropdown SteeringChooser;
@@ -24,11 +23,9 @@ public class PlayerDataDisplay : MonoBehaviour
     {
         target.LoadData();
         NameField.text = target.WonszName;
-        ColorField.startingColor = target.WonszColor;
-        ColorField.color = target.WonszColor;
 
         GenderChooser.value = (int)target.WonszGender;
-        SteeringChooser.value = (int)target.WonszSteering;
+        SteeringChooser.value = System.Array.IndexOf(Steering.Available.Keys.ToArray(), target.WonszSteering);
         LocalSteering.isOn = target.WonszLocalSteering;
     }
     private void OnEnable()
@@ -39,11 +36,6 @@ public class PlayerDataDisplay : MonoBehaviour
     public void SetName()
     {
         target.WonszName = NameField.text;
-        target.SaveData();
-    }
-    public void SetColor()
-    {
-        target.WonszColor = ColorField.color;
         target.SaveData();
     }
     public void SetGender()

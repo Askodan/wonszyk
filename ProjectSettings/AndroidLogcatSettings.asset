@@ -3,8 +3,8 @@
     "m_SelectedPackage": {
         "deviceId": "fdf2a8cb",
         "name": "com.DefaultCompany.Wonsz_turbo",
-        "processId": 24940,
-        "exited": true
+        "processId": 5290,
+        "exited": false
     },
     "m_SelectedPriority": 4,
     "m_KnownPackagesForSerialization": [
@@ -19,6 +19,12 @@
             "name": "com.DefaultCompany.Wonsz_turbo",
             "processId": 24940,
             "exited": true
+        },
+        {
+            "deviceId": "fdf2a8cb",
+            "name": "com.DefaultCompany.Wonsz_turbo",
+            "processId": 5290,
+            "exited": false
         }
     ],
     "m_Tags": {

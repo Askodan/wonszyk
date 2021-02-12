@@ -34,7 +34,7 @@ public class WonszykMover : MonoBehaviour
     {
         foreach (var part in body)
         {
-            part.SetColor(data.WonszColor);
+            part.SetColor(data.WonszMainColor, data.WonszPatternColor, data.WonszPattern);
         }
     }
     public void SetLength(int length, Vector2Int startPosition = new Vector2Int())
@@ -42,7 +42,7 @@ public class WonszykMover : MonoBehaviour
         while (body.Count < length)
         {
             WonszykOnMap newPart = Instantiate(bodyPart);
-            newPart.SetColor(data.WonszColor);
+            newPart.SetColor(data.WonszMainColor, data.WonszPatternColor, data.WonszPattern);
             if (body.Count > 0)
             {
                 newPart.CopyPositionAndDirection(Tail, false);
