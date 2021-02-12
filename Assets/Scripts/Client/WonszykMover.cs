@@ -79,33 +79,6 @@ public class WonszykMover : MonoBehaviour
         }
     }
 
-    public void BeMoved(Vector2Int newPos)
-    {
-        if (newPos.x == Head.Position.x && newPos.y == Head.Position.y)
-            return;
-        Move();
-        Head.Position = newPos;
-    }
-
-    public void MoveForward()
-    {
-        Move();
-        Head.MoveForward();
-    }
-
-    void Move()
-    {
-        for (int i = 0; i < body.Count; i++)
-        {
-            int index = body.Count - i - 1;
-            WonszykOnMap bodyPart = body[index];
-            if (index > 0)
-            {
-                body[index].CopyPositionAndDirection(body[index - 1]);
-            }
-        }
-    }
-
     public PlayerDirection GetUnallowedDirection()
     {
         if (Head && Neck)
@@ -177,7 +150,7 @@ public class WonszykMover : MonoBehaviour
         int i = 0;
         foreach (var pos in original.positions)
         {
-            Vector2Int trim = ItemOnMap.KeepOnMap(pos, GameLogic.Instance.data.mapSize);
+            Vector2Int trim = LogicMap.KeepOnMap(pos, GameLogic.Instance.data.mapSize);
             body[i].Position = trim;
             if (i > 0)
             {
@@ -193,7 +166,7 @@ public class WonszykMover : MonoBehaviour
         int i = 1;
         foreach (var el in arrayFromTail)
         {
-            body[i].Position = ItemOnMap.KeepOnMap(body[i - 1].Position + el.ToVector2Int(), GameLogic.Instance.map.Size);
+            body[i].Position = LogicMap.KeepOnMap(body[i - 1].Position + el.ToVector2Int(), GameLogic.Instance.map.Size);
             body[i].Direction = el;
         }
     }

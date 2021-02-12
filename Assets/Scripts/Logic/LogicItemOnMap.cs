@@ -4,7 +4,6 @@ public class LogicItemOnMap
 {
     private Vector2Int position;
     public Vector2Int Position { get { return position; } set { position = value; } }
-
     public LogicItemOnMap(Vector2Int position)
     {
         this.Position = position;
@@ -39,7 +38,7 @@ public class LogicItemOnMap
     {
 
     }
-    public override string ToString()
+    override public string ToString()
     {
         string result = "(" + Position.x + "," + Position.y + ")";
         return result;
@@ -47,5 +46,18 @@ public class LogicItemOnMap
     virtual public void PlayerHit(LogicWonsz player, LogicMap LM)
     {
 
+    }
+    public LogicItemOnMap() { }
+    virtual public int BytesLength { get { return 2; } }
+    virtual public byte[] ToBytes()
+    {
+        byte[] result = new byte[BytesLength];
+        result[0] = (byte)Position.x;
+        result[1] = (byte)Position.y;
+        return result;
+    }
+    virtual public void LoadFromBytes(byte[] bytes)
+    {
+        Position = new Vector2Int((int)bytes[0], (int)bytes[1]);
     }
 }

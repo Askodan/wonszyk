@@ -7,14 +7,14 @@ public class ArrayOnMap : MonoBehaviour
     public ItemOnMap[] elements = new ItemOnMap[0];
     [SerializeField] ItemOnMap prefab;
 
-    public void UpdatePositions(Vector2Int[] newpos)
+    public void UpdatePositions(LogicItemOnMap[] logicItem)
     {
-        if (elements.Length != newpos.Length)
+        if (elements.Length != logicItem.Length)
         {
-            ItemOnMap[] newEls = new ItemOnMap[newpos.Length];
-            for (int i = 0; i < Mathf.Max(elements.Length, newpos.Length); i++)
+            ItemOnMap[] newEls = new ItemOnMap[logicItem.Length];
+            for (int i = 0; i < Mathf.Max(elements.Length, logicItem.Length); i++)
             {
-                if (elements.Length > newpos.Length)
+                if (elements.Length > logicItem.Length)
                 {
                     if (i < newEls.Length)
                     {
@@ -41,7 +41,7 @@ public class ArrayOnMap : MonoBehaviour
         }
         for (int i = 0; i < elements.Length; i++)
         {
-            elements[i].Position = newpos[i];
+            elements[i].SetLogicValue(logicItem[i]);
         }
     }
 }

@@ -77,7 +77,7 @@ public class LogicWonsz
             }
         }
 
-        parts[0].Position = ItemOnMap.KeepOnMap(parts[0].Position + direction.ToVector2Int(), MapSize);
+        parts[0].Position = LogicMap.KeepOnMap(parts[0].Position + direction.ToVector2Int(), MapSize);
     }
     public void BackOff()
     {

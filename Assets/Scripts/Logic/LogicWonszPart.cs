@@ -21,7 +21,7 @@ public class LogicWonszPart : LogicItemOnMap
         {
             foreach (var part in leftParts)
             {
-                LM.Walls.Add(new LogicWall(part));
+                LM.Walls.Add(new LogicWall(part, this.master.PlayerId));
             }
         }
         else

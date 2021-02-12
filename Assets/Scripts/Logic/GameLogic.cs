@@ -64,9 +64,9 @@ public class GameLogic : GameLogicBehavior
             resultsMachine.Log(wonsz.playerId, wonsz.points);
         }
         var w = args.GetNext<byte[]>();
-        walls.UpdatePositions(ItemOnMap.Bytes2Points(w));
+        walls.UpdatePositions(new ArrayOnMapSerializator<LogicWall>().Bytes2Array(w));
         var a = args.GetNext<byte[]>();
-        playerApples.UpdatePositions(ItemOnMap.Bytes2Points(a));
+        playerApples.UpdatePositions(new ArrayOnMapSerializator<LogicApple>().Bytes2Array(a));
     }
 
     public override void Message(RpcArgs args)
@@ -106,7 +106,6 @@ public class GameLogic : GameLogicBehavior
                 data.FramesStopped);
             LocalIPAddress();
         }
-
     }
 
     public override void CreatePlayer(RpcArgs args)
@@ -121,8 +120,6 @@ public class GameLogic : GameLogicBehavior
             if (state == GameStates.Connection)
             {
                 networkObject.SendRpc(player, RPC_CREATE_PLAYER);
-                //var result = NetworkManager.Instance.InstantiatePlayer();
-                //result.networkObject.AssignOwnership(player);
             }
         });
     }
@@ -148,28 +145,20 @@ public class GameLogic : GameLogicBehavior
 
     public void StartGame()
     {
-        if (networkObject.IsServer)
+        if (networkObject.IsServer && state == GameStates.Connection)
         {
-            if (state == GameStates.Connection)
-            {
-                //if (Player.ActivePlayers.Count == data.PlayersCountToStart)
-                {
-                    state = GameStates.Play;
-                    // foreach (var player in Player.ActivePlayers)
-                    // {
-                    //     player.Value.mywonsz.SetLength(Mathf.Max(data.startLength, data.minLength), map.GetRandomFreePlace());
-                    // }
-                    // Prepare 
-                    logicMap = new LogicMap(data, Player.ActivePlayers.Keys.ToArray());
-                    networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
-                            CreateAllWonszPacket(logicMap.All_wonsz),
-                            ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(logicMap.Walls.ToArray())),
-                            ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(logicMap.Apples.ToArray())));
+            state = GameStates.Play;
+            // Prepare 
+            logicMap = new LogicMap(data, Player.ActivePlayers.Keys.ToArray());
+            networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
+                    CreateAllWonszPacket(logicMap.All_wonsz),
+                    new ArrayOnMapSerializator<LogicWall>().ArrayToBytes(logicMap.Walls.ToArray()),
+                    new ArrayOnMapSerializator<LogicApple>().ArrayToBytes(logicMap.Apples.ToArray()));
 
-                    networkObject.SendRpc(RPC_GAME_START, Receivers.AllBuffered);
-                }
-            }
+            networkObject.SendRpc(RPC_GAME_START, Receivers.AllBuffered);
+
         }
+
     }
     IEnumerator StartSequence()
     {
@@ -222,8 +211,8 @@ public class GameLogic : GameLogicBehavior
 
             networkObject.SendRpc(RPC_WONSZ_POSITION, Receivers.All,
                     CreateAllWonszPacket(logicMap.All_wonsz),
-                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(logicMap.Walls.ToArray())),
-                    ItemOnMap.Points2Bytes(LogicItemOnMap.Items2Vec(logicMap.Apples.ToArray())));
+                    new ArrayOnMapSerializator<LogicWall>().ArrayToBytes(logicMap.Walls.ToArray()),
+                    new ArrayOnMapSerializator<LogicApple>().ArrayToBytes(logicMap.Apples.ToArray()));
         }
     }
     void CalculateStatistics()

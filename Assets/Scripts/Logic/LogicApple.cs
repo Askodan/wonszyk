@@ -31,4 +31,5 @@ public class LogicApple : LogicItemOnMap
         LM.SetChangeLength(player, 1);
         Debug.Log("apple hit with player");
     }
+    public LogicApple() { }
 }

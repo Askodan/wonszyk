@@ -73,27 +73,6 @@ public class ItemOnMap : MonoBehaviour
         Direction = another.direction;
     }
 
-    public void MoveForward()
-    {
-        if (IgnoreLevel > 0)
-        {
-            IgnoreLevel -= 1;
-        }
-        Position = GetMoveForwardPosition();
-    }
-
-    public Vector2Int GetMoveForwardPosition()
-    {
-        Vector2Int newPos = new Vector2Int(Position.x, Position.y) + direction.ToVector2Int();
-        // Repeat on edges
-        newPos = KeepOnMap(newPos, myMap.Size);
-        return newPos;
-    }
-
-    static public Vector2Int KeepOnMap(Vector2Int pos, int size)
-    {
-        return new Vector2Int((int)Mathf.Repeat(pos.x, size), (int)Mathf.Repeat(pos.y, size));
-    }
     static public Vector2Int DirectionVector(Vector2Int start, Vector2Int end, int size = 0)
     {
         Vector2Int diff = end - start;
@@ -120,6 +99,10 @@ public class ItemOnMap : MonoBehaviour
                 diff.y = 1;
         }
         return diff;
+    }
+    virtual public void SetLogicValue(LogicItemOnMap item)
+    {
+        this.Position = item.Position;
     }
     // vector utils
     static public Vector2Int[] ToPoints(ItemOnMap[] items)

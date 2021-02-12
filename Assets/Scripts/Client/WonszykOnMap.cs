@@ -44,7 +44,7 @@ public class WonszykOnMap : ItemOnMap
         {
             rec.renderer.material.SetColor("_ColorBase", mainColor);
             rec.renderer.material.SetColor("_ColorPattern", patternColor);
-            rec.renderer.material.SetTexture("_PatternTex", patterns[pattern - 1]);
+            rec.renderer.material.SetTexture("_PatternTex", PatternBank.Instance.GetPattern(pattern));
         }
     }
 }

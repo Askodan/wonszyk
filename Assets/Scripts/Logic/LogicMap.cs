@@ -98,7 +98,7 @@ public class LogicMap
                 Vector2Int[] hitpoints = new Vector2Int[3];
                 for (int j = 0; j < hitpoints.Length; j++)
                 {
-                    var hitpoint = ItemOnMap.KeepOnMap(wonsz.Parts[0].Position + wonsz.Direction.ToVector2Int() * (j + 1), data.mapSize);
+                    var hitpoint = LogicMap.KeepOnMap(wonsz.Parts[0].Position + wonsz.Direction.ToVector2Int() * (j + 1), data.mapSize);
                     var hit = WhatIsHere(hitpoint);
                     hit?.LaserHit(this);
                 }
@@ -168,5 +168,9 @@ public class LogicMap
             result[i] = all_wonsz[i].Results;
         }
         return result;
+    }
+    static public Vector2Int KeepOnMap(Vector2Int pos, int size)
+    {
+        return new Vector2Int((int)Mathf.Repeat(pos.x, size), (int)Mathf.Repeat(pos.y, size));
     }
 }
