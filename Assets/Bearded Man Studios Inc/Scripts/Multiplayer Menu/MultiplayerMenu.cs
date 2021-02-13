@@ -3,6 +3,7 @@ using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking.Lobby;
 using BeardedManStudios.SimpleJSON;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -86,8 +87,9 @@ public class MultiplayerMenu : MonoBehaviour
     {
         ipAddress.text = foundIp.text;
     }
-    public void Connect()
+    public void Connect(Button connectButton)
     {
+        connectButton.interactable = false;
         ((WonszykServerData)KeepAliveBetweenScenes.Instance).ip = ipAddress.text;
         ((WonszykServerData)KeepAliveBetweenScenes.Instance).port = portNumber.text;
         if (connectUsingMatchmaking)
@@ -119,6 +121,13 @@ public class MultiplayerMenu : MonoBehaviour
         }
 
         Connected(client);
+        StartCoroutine(DelayInteractable(connectButton));
+    }
+
+    IEnumerator DelayInteractable(Button but)
+    {
+        yield return new WaitForSeconds(2f);
+        but.interactable = true;
     }
 
     public void ConnectToMatchmaking()

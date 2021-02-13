@@ -54,14 +54,18 @@ public class GameLogic : GameLogicBehavior
     {
         byte[] all_data = args.GetNext<byte[]>();
         NetWonsz[] wonsze = DivideAllWonszPacket(all_data);
-        foreach (var wonsz in wonsze)
+        foreach (var new_wonsz in wonsze)
         {
-            var wonszyk = Player.ActivePlayers[wonsz.playerId];
-            wonszyk.mywonsz.FromNetWonsz(wonsz);
-            if (wonsz.ate) logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.meal, wonszyk.data.WonszGender, ""));
-            if (wonsz.shot) { logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.shot, wonszyk.data.WonszGender, "")); wonszyk.ShootLaser(); }
-            if (wonsz.collide) logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.hit, wonszyk.data.WonszGender, ""));
-            resultsMachine.Log(wonsz.playerId, wonsz.points);
+            var wonszyk = Player.ActivePlayers[new_wonsz.playerId];
+            wonszyk.mywonsz.FromNetWonsz(new_wonsz);
+            if (new_wonsz.ate) logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.meal, wonszyk.data.WonszGender, ""));
+            if (new_wonsz.shot) { logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.shot, wonszyk.data.WonszGender, "")); wonszyk.ShootLaser(); }
+            if (new_wonsz.collide) logMachine.Log(TextBank.Say(wonszyk.name + " ", Texts.hit, wonszyk.data.WonszGender, ""));
+            resultsMachine.Log(new_wonsz.playerId, new_wonsz.points);
+            if (wonszyk.networkObject.IsOwner)
+            {
+                laser.interactable = new_wonsz.positions.Length > ((WonszykServerData)WonszykServerData.Instance).minLength;
+            }
         }
         var w = args.GetNext<byte[]>();
         walls.UpdatePositions(new ArrayOnMapSerializator<LogicWall>().Bytes2Array(w));
