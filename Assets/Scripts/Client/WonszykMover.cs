@@ -27,7 +27,11 @@ public class WonszykMover : MonoBehaviour
     {
         var wsd = (WonszykServerData)sender;
         if (blockedMovementEffect)
-            blockedMovementEffect.GetComponentInChildren<Scale>().CycleTime = wsd.FramesStopped / wsd.gameSpeed;
+        {
+            var scaler = blockedMovementEffect.GetComponentInChildren<Scale>();
+            scaler.CycleTime = wsd.FramesStopped / wsd.gameSpeed;
+            scaler.TickTime = 1f / wsd.gameSpeed;
+        }
     }
     public int GetLength() { return body.Count; }
     public void UpdateColor()

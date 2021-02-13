@@ -7,11 +7,12 @@ public class NetResults
     public uint playerId;
     public int points;
     public int hits;
+    public int shotsHit;
     public int meals;
     public int shots;
     static public int CalcSize()
     {
-        return 20;
+        return 24;
     }
     public byte[] ToByteArray()
     {
@@ -19,6 +20,7 @@ public class NetResults
         result.AddRange(System.BitConverter.GetBytes(playerId));
         result.AddRange(System.BitConverter.GetBytes(points));
         result.AddRange(System.BitConverter.GetBytes(hits));
+        result.AddRange(System.BitConverter.GetBytes(shotsHit));
         result.AddRange(System.BitConverter.GetBytes(meals));
         result.AddRange(System.BitConverter.GetBytes(shots));
         return result.ToArray();
@@ -26,7 +28,7 @@ public class NetResults
     static public byte[] ArrayToByteArray(NetResults[] arr)
     {
         List<byte> result = new List<byte>();
-        foreach(var nr in arr)
+        foreach (var nr in arr)
         {
             result.AddRange(nr.ToByteArray());
         }
@@ -39,22 +41,23 @@ public class NetResults
         result.playerId = System.BitConverter.ToUInt32(arr, 0);
         result.points = System.BitConverter.ToInt32(arr, 4);
         result.hits = System.BitConverter.ToInt32(arr, 8);
-        result.meals = System.BitConverter.ToInt32(arr, 12);
-        result.shots = System.BitConverter.ToInt32(arr, 16);
+        result.shotsHit = System.BitConverter.ToInt32(arr, 12);
+        result.meals = System.BitConverter.ToInt32(arr, 16);
+        result.shots = System.BitConverter.ToInt32(arr, 20);
         return result;
     }
 
     static public NetResults[] ArrayFromByteArray(byte[] arr)
     {
         int size = NetResults.CalcSize();
-        if(arr.Length % size != 0)
+        if (arr.Length % size != 0)
         {
             Debug.LogError("Size of byte array is wrong while deoding NetResult");
             return null;
         }
         List<byte> bytelist = new List<byte>(arr);
         NetResults[] result = new NetResults[Mathf.FloorToInt(arr.Length / size)];
-        for(int i = 0; i < result.Length; i++)
+        for (int i = 0; i < result.Length; i++)
         {
             result[i] = FromByteArray(bytelist.GetRange(i * size, size).ToArray());
         }
@@ -67,6 +70,7 @@ public class NetResults
         result += "id " + playerId + " ";
         result += "points " + points + " ";
         result += "hits " + hits + " ";
+        result += "shotHits " + hits + " ";
         result += "meals " + meals + " ";
         result += "shots " + shots + " ";
         return result;
@@ -77,6 +81,7 @@ public class NetResults
         NetResults test = new NetResults();
         test.playerId = 124;
         test.hits = 412;
+        test.shotsHit = 320;
         test.meals = -2;
         test.points = 4512;
         test.shots = 123;

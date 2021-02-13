@@ -557,9 +557,9 @@ MonoBehaviour:
   nameText: {fileID: 452237829}
   pointsText: {fileID: 1431175417}
   shotsText: {fileID: 1606999409}
+  shotsHitText: {fileID: 1412143720}
   hitsText: {fileID: 576439284}
   mealsText: {fileID: 543345019}
-  movedText: {fileID: 1412143720}
 --- !u!224 &353067929
 RectTransform:
   m_ObjectHideFlags: 0
@@ -577,11 +577,11 @@ RectTransform:
   - {fileID: 143116975}
   - {fileID: 1606999411}
   - {fileID: 91308145}
-  - {fileID: 576439286}
-  - {fileID: 1557198728}
-  - {fileID: 543345021}
-  - {fileID: 947088114}
   - {fileID: 1412143722}
+  - {fileID: 1557198728}
+  - {fileID: 576439286}
+  - {fileID: 947088114}
+  - {fileID: 543345021}
   - {fileID: 648302352}
   m_Father: {fileID: 747467290}
   m_RootOrder: 0
@@ -641,7 +641,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Player Name
+  m_Text: Gracz
 --- !u!222 &452237830
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -811,7 +811,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Meals
+  m_Text: Zjedzone
 --- !u!222 &543345020
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -832,11 +832,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 353067929}
-  m_RootOrder: 8
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 449.50003, y: 0}
+  m_AnchoredPosition: {x: 534.5, y: 0}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &576439283
@@ -889,7 +889,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Crashes
+  m_Text: Zderzenia
 --- !u!222 &576439285
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -910,11 +910,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 353067929}
-  m_RootOrder: 6
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 365.00003, y: 0}
+  m_AnchoredPosition: {x: 450.7, y: 0}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &648302351
@@ -952,7 +952,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -18}
-  m_SizeDelta: {x: 910.3, y: 5}
+  m_SizeDelta: {x: 1024, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &648302353
 MonoBehaviour:
@@ -1914,7 +1914,7 @@ GameObject:
   - component: {fileID: 1412143721}
   - component: {fileID: 1412143720}
   m_Layer: 5
-  m_Name: Moved
+  m_Name: ShotsHit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1952,7 +1952,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: test
+  m_Text: "Celno\u015B\u0107"
 --- !u!222 &1412143721
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1973,11 +1973,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 353067929}
-  m_RootOrder: 10
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 535.5, y: 0}
+  m_AnchoredPosition: {x: 365.2, y: 0}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1431175416
@@ -2030,7 +2030,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Points
+  m_Text: Punkty
 --- !u!222 &1431175418
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2055,7 +2055,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 194.30008, y: 0}
+  m_AnchoredPosition: {x: 191.2, y: 0}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1459154066
@@ -2302,7 +2302,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: MAIN MENU
+  m_Text: "Powr\xF3t"
 --- !u!222 &1490050706
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2435,7 +2435,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Shots
+  m_Text: "Strza\u0142y"
 --- !u!222 &1606999410
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2460,7 +2460,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 278.40002, y: 0}
+  m_AnchoredPosition: {x: 279.9, y: 0}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1740447878

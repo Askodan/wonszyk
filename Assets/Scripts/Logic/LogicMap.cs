@@ -101,6 +101,10 @@ public class LogicMap
                     var hitpoint = LogicMap.KeepOnMap(wonsz.Parts[0].Position + wonsz.Direction.ToVector2Int() * (j + 1), data.mapSize);
                     var hit = WhatIsHere(hitpoint);
                     hit?.LaserHit(this);
+                    if (hit != null)
+                    {
+                        wonsz.ShotHit = true;
+                    }
                 }
             }
         }

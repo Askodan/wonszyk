@@ -15,7 +15,7 @@ public class StatsMachine : MonoBehaviour
     }
     void SetNumPlayers(int num)
     {
-        int showedNum = Mathf.Min(limit, num)+1;
+        int showedNum = Mathf.Min(limit, num) + 1;
         texts = new PlayerStatsDisplay[showedNum];
         texts[0] = text;
         RectTransform rt = text.GetComponent<RectTransform>();
@@ -60,7 +60,7 @@ public class StatsMachine : MonoBehaviour
         {
             if (i == texts.Length)
                 break;
-            texts[i].SetStats(el.Key, el.Value.points, el.Value.shots, el.Value.hits, el.Value.meals, 0);
+            texts[i].SetStats(el.Key, el.Value.points, el.Value.shots, el.Value.shotsHit, el.Value.hits, el.Value.meals);
             i++;
         }
         for (; i < texts.Length; i++)

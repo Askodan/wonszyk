@@ -245,6 +245,10 @@ public class GameLogic : GameLogicBehavior
                 PointsChange += data.shotPoints;
                 a_wonszyk.Results.shots += 1;
             }
+            if (a_wonszyk.ShotHit)
+            {
+                a_wonszyk.Results.shotsHit += 1;
+            }
             if (PointsChange != 0)
             {
                 a_wonszyk.Results.points = Mathf.Max(0, a_wonszyk.Results.points + PointsChange);

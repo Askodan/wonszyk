@@ -104,7 +104,8 @@ public class LogicWonsz
             }
             else if (part != hitElement)
             {
-                cut.Add(parts[i]);
+                if (parts[i - 1].Position != parts[i].Position)
+                    cut.Add(parts[i]);
             }
             i++;
         }

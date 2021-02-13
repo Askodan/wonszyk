@@ -11,6 +11,7 @@ public class Scale : MonoBehaviour
         get { return cycleTime; }
         set { cycleTime = value; }
     }
+    public float TickTime { get; set; }
     private float currentTime;
     private Vector3 startScale;
     private void Awake()
@@ -28,5 +29,9 @@ public class Scale : MonoBehaviour
         var scaleCoefficient = Mathf.Lerp(scaleRange.x, scaleRange.y, scaleProgress);
         transform.localScale = new Vector3(startScale.x, startScale.y, startScale.z) * scaleCoefficient;
         currentTime += Time.deltaTime;
+        if (currentTime > cycleTime + 0.5f * TickTime)
+        {
+            currentTime -= cycleTime;
+        }
     }
 }
