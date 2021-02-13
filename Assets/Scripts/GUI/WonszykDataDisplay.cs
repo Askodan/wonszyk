@@ -20,7 +20,9 @@ public class WonszykDataDisplay : MonoBehaviour
     {
         target.LoadData();
         MainColorField.startingColor = target.WonszMainColor;
+        MainColorField.color = target.WonszMainColor;
         PatternColorField.startingColor = target.WonszPatternColor;
+        PatternColorField.color = target.WonszPatternColor;
         Pattern.Value = target.WonszPattern;
     }
     private void OnEnable()
