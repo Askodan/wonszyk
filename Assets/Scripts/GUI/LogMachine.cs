@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.UI;
-public class LogMachine : SpaceOnSide
+public class LogMachine : SpaceOnSide<Text>
 {
     Queue<string> messages;
     protected override void Awake()
@@ -12,7 +12,8 @@ public class LogMachine : SpaceOnSide
         base.Awake();
         Log("Oczekiwanie na graczy");
     }
-    protected override void SetupSize(){
+    protected override void SetupSize()
+    {
         var rt = GetComponent<RectTransform>();
         rt.anchorMax = new Vector2(CalcWidthLeft(Screen.width, Screen.height), 1f);
         limit = (int)Mathf.Abs(Mathf.Round(rt.rect.height / text.rectTransform.rect.height));
@@ -25,7 +26,7 @@ public class LogMachine : SpaceOnSide
             messages.Dequeue();
         }
         int i = 0;
-        foreach(var m in messages.ToArray())
+        foreach (var m in messages.ToArray())
         {
             texts[i].text = m;
             i++;
