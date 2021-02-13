@@ -14,6 +14,7 @@ public class ServerDataDisplay : MonoBehaviour
     [SerializeField] private NumberEditor FramesStopped;
     public InputField ipAddress = null;
     public InputField portNumber = null;
+    public InputField portClientNumber = null;
     private void Start()
     {
         target = (WonszykServerData)WonszykServerData.Instance;
@@ -26,6 +27,7 @@ public class ServerDataDisplay : MonoBehaviour
         FramesStopped.Value = target.FramesStopped;
         ipAddress.text = target.ip;
         portNumber.text = target.port;
+        portClientNumber.text = target.port;
     }
     public void setNumPlayers()
     {
@@ -65,6 +67,11 @@ public class ServerDataDisplay : MonoBehaviour
     public void setPort()
     {
         target.port = portNumber.text;
+        target.SaveData();
+    }
+    public void setClientPort()
+    {
+        target.clientPort = portClientNumber.text;
         target.SaveData();
     }
 }

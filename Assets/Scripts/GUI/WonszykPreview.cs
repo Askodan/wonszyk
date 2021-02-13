@@ -17,6 +17,12 @@ public class WonszykPreview : MonoBehaviour
         Body.PositionInWonszyk = EnumWonszykPartType.Body;
         Tail.PositionInWonszyk = EnumWonszykPartType.Tail;
     }
+    private void OnEnable()
+    {
+        transform.position = Vector3.zero;
+        var canvas = GetComponentInParent<Canvas>();
+        transform.localScale = Vector3.one / canvas.scaleFactor;
+    }
     private void Update()
     {
         SetWonszyk();

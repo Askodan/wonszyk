@@ -12,6 +12,7 @@ public class MultiplayerMenu : MonoBehaviour
 {
     public InputField ipAddress = null;
     public InputField portNumber = null;
+    public InputField portNumberClient = null;
     public bool DontChangeSceneOnConnect = false;
     public string masterServerHost = string.Empty;
     public ushort masterServerPort = 15940;
@@ -47,14 +48,15 @@ public class MultiplayerMenu : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(1f);
-            NetWorker.RefreshLocalUdpListings(ushort.Parse(portNumber.text));
+
+            ushort p;
+            if (ushort.TryParse(portNumber.text, out p))
+                NetWorker.RefreshLocalUdpListings(p);
         }
     }
 
     private void Start()
     {
-        ipAddress.text = "127.0.0.1";
-        portNumber.text = "15937";
         for (int i = 0; i < ToggledButtons.Length; ++i)
         {
             Button btn = ToggledButtons[i].GetComponent<Button>();
@@ -65,7 +67,9 @@ public class MultiplayerMenu : MonoBehaviour
         if (!useTCP)
         {
             // Do any firewall opening requests on the operating system
-            NetWorker.PingForFirewall(ushort.Parse(portNumber.text));
+            ushort p;
+            if (ushort.TryParse(portNumber.text, out p))
+                NetWorker.PingForFirewall(p);
         }
 
         if (useMainThreadManagerForRPCs)
@@ -74,7 +78,9 @@ public class MultiplayerMenu : MonoBehaviour
         if (getLocalNetworkConnections)
         {
             NetWorker.localServerLocated += LocalServerLocated;
-            NetWorker.RefreshLocalUdpListings(ushort.Parse(portNumber.text));
+            ushort p;
+            if (ushort.TryParse(portNumber.text, out p))
+                NetWorker.RefreshLocalUdpListings(p);
         }
     }
 
@@ -91,7 +97,7 @@ public class MultiplayerMenu : MonoBehaviour
     {
         connectButton.interactable = false;
         ((WonszykServerData)KeepAliveBetweenScenes.Instance).ip = ipAddress.text;
-        ((WonszykServerData)KeepAliveBetweenScenes.Instance).port = portNumber.text;
+        ((WonszykServerData)KeepAliveBetweenScenes.Instance).port = portNumberClient.text;
         if (connectUsingMatchmaking)
         {
             ConnectToMatchmaking();

@@ -26,6 +26,7 @@ public class WonszykServerData : KeepAliveBetweenScenes, INotifyPropertyChanged
     public ItemOnMap playerApplePrefav;
     public string ip = "127.0.0.1";
     public string port = "15937";
+    public string clientPort = "15937";
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -74,6 +75,10 @@ public class WonszykServerData : KeepAliveBetweenScenes, INotifyPropertyChanged
         {
             port = PlayerPrefs.GetString("ServerPORT");
         }
+        if (PlayerPrefs.HasKey("ClientPORT"))
+        {
+            clientPort = PlayerPrefs.GetString("ClientPORT");
+        }
         if (PlayerPrefs.HasKey("ServerLenStillApples"))
         {
             lenStillApples = PlayerPrefs.GetInt("ServerLenStillApples");
@@ -90,6 +95,7 @@ public class WonszykServerData : KeepAliveBetweenScenes, INotifyPropertyChanged
         PlayerPrefs.SetInt("ServerFramesStopped", FramesStopped);
         PlayerPrefs.SetString("ServerIP", ip);
         PlayerPrefs.SetString("ServerPORT", port);
+        PlayerPrefs.SetString("ClientPORT", clientPort);
         PlayerPrefs.SetInt("ServerLenStillApples", lenStillApples);
         PlayerPrefs.Save();
     }
